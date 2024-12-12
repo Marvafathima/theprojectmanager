@@ -35,8 +35,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     joined_at = models.DateTimeField(default=timezone.now)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
-
+    REQUIRED_FIELDS = ['username']  
+    
+    def save(self, *args, **kwargs):
+        # Automatically set is_staff=True if role is 'manager'
+        if self.role == 'manager':
+            self.is_staff = True
+        super().save(*args, **kwargs)
     def __str__(self):
         return self.email 
 
