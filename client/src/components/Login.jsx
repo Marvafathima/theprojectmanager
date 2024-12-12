@@ -21,7 +21,8 @@ export function Login() {
   });
   const { isAuthenticated, loading, error } = useSelector(state => state.auth);
   const [errors, setErrors] = useState({});
-
+  const dispatch=useDispatch();
+  const navigate=useNavigate()
   const validateForm = () => {
     const newErrors = {};
 
@@ -42,26 +43,26 @@ export function Login() {
   };
 
 
-const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     try {
-//       // Using the loginUser thunk from your slice
-//       if (validateForm()){
-//         const resultAction = await dispatch(loginUser(formData)).unwrap();
-//         dispatch(fetchUserDetails())
-//         navigate('/dashboard');
-//       } 
-//     } catch (err) {
-//       // Redux Toolkit will handle the error state
-//       console.error('Login failed:', err);
-//     }
+const handleSubmit = async () => {
+   console.log("button clicked")
+    try {
+      // Using the loginUser thunk from your slice
+      if (validateForm()){
+        const resultAction = await dispatch(login(formData)).unwrap();
+        // dispatch(fetchUserDetails())
+        navigate('/dashboard');
+      } 
+    } catch (err) {
+      // Redux Toolkit will handle the error state
+      console.error('Login failed:', err);
+    }
   };
   const handleChange = (e) => {
-//     const { name, value } = e.target;
-//     setFormData(prev => ({
-//       ...prev,
-//       [name]: value
-//     }));
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 //   const dispatch = useDispatch();
 //   const navigate = useNavigate();

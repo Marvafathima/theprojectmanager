@@ -6,20 +6,23 @@ import {
   CardFooter, 
   Typography, 
   Input, 
-  Button 
+  Button ,
+  Select,
+  Option
 } from "@material-tailwind/react";
 import { Link } from 'react-router-dom';
 import Layout from './Layout';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { signup,login,logout } from '../slice/authSlice';
-
+import { toast } from 'react-toastify';
 export function Signup() {
   const [formData, setFormData] = useState({
     email: '',
     username: '',
     password: '',
     password2: '',
+    role:'',
     profile_pic: null
   });
  const dispatch=useDispatch()
@@ -63,29 +66,40 @@ export function Signup() {
 
 const handleSubmit = async (e) => {
     e.preventDefault();
-//     if (!validateForm()) return;
+    if (!validateForm()) return;
 
-//     const formDataToSend = new FormData();
+    const formDataToSend = new FormData();
     
-//     // Explicitly add each field to ensure no blanks
-//     if (formData.email) formDataToSend.append('email', formData.email);
-//     if (formData.username) formDataToSend.append('username', formData.username);
-//     if (formData.password) formDataToSend.append('password', formData.password);
-//     if (formData.password2) formDataToSend.append('password2', formData.password2);
+    // Explicitly add each field to ensure no blanks
+    if (formData.email) formDataToSend.append('email', formData.email);
+    if (formData.username) formDataToSend.append('username', formData.username);
+    if (formData.password) formDataToSend.append('password', formData.password);
+    if (formData.password2) formDataToSend.append('password2', formData.password2);
+    if (formData.role) formDataToSend.append('role',formData.role);
+    // Handle profile picture separately
+    if (formData.profile_pic) {
+      formDataToSend.append('profile_pic', formData.profile_pic);
+    }
     
-//     // Handle profile picture separately
-//     if (formData.profile_pic) {
-//       formDataToSend.append('profile_pic', formData.profile_pic);
-//     }
+    try {
+        console.log("Form data to be sent:", Object.fromEntries(formDataToSend)); // Convert to object for easier logging
+        const resultAction = await dispatch(signup(formDataToSend)).unwrap();
+        toast.success("User Created successfully")
+        // dispatch(fetchUserDetails())
+        navigate('/dashboard');
+    } catch (err) {
+     
+        console.error('Signup failed:', err);
+        if (err && typeof err === 'object') {
+          const errorMessages = Object.entries(err).map(([field, message]) => {
+            return `${field}: ${Array.isArray(message) ? message.join(', ') : message}`;
+          }).join('\n');
     
-//     try {
-//         console.log("Form data to be sent:", Object.fromEntries(formDataToSend)); // Convert to object for easier logging
-//         const resultAction = await dispatch(signupUser(formDataToSend)).unwrap();
-//         dispatch(fetchUserDetails())
-//         navigate('/dashboard');
-//     } catch (err) {
-//         console.error('Signup failed:', err);
-//     }
+          toast.error(`Signup failed:\n${errorMessages}`);
+        } else {
+          toast.error('Signup failed. Please try again later.');
+        }
+    }
   };
 
 
@@ -167,7 +181,31 @@ const handleSubmit = async (e) => {
               {errors.password2}
             </Typography>
           )}
-          
+         <div> <Select
+        label="Role"
+        name="role"
+        value={formData.role}
+        onChange={(value) => handleChange({ 
+          target: { 
+            name: 'role', 
+            value: value 
+          } 
+        })}
+        error={!!errors.role}
+      >
+        <Option value="manager">Manager</Option>
+        <Option value="employee">Employee</Option>
+        <Option value="admin">Admin</Option>
+      </Select>
+      {errors.role && (
+        <Typography 
+          color="red" 
+          className="text-xs mt-1"
+        >
+          {errors.role}
+        </Typography>
+      )}</div>
+
           <Input 
             type="file" 
             label="Profile Picture" 

@@ -43,7 +43,7 @@ class CustomTokenRefreshView(TokenRefreshView):
             )
 
 class LogoutView(APIView):
-    permission_classes = [IsAuthenticated]
+    
     
     def post(self, request):
         try:

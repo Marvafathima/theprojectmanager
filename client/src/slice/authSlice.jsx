@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-
+import { BASE_URL } from '../config';
 // Initial State
 import axios from 'axios';
 
@@ -17,7 +17,7 @@ export const signup = createAsyncThunk(
   'auth/signup',
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await axios.post('/signup/', userData);
+      const response = await axios.post(`${BASE_URL}signup/`, userData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Signup failed');
@@ -29,12 +29,12 @@ export const login = createAsyncThunk(
   'auth/login',
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await axios.post('/token/', credentials);
+      const response = await axios.post(`${BASE_URL}token/`, credentials);
       
       // Store tokens in localStorage
       localStorage.setItem('accessToken', response.data.access);
       localStorage.setItem('refreshToken', response.data.refresh);
-      
+      console.log("response data",response.data)
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Login failed');
@@ -46,10 +46,17 @@ export const logout = createAsyncThunk(
   'auth/logout',
   async (_, { rejectWithValue }) => {
     try {
+       
       const refreshToken = localStorage.getItem('refreshToken');
-      
+      const accessToken = localStorage.getItem('accessToken');
+      console.log("refreshtoken",refreshToken)
       // Call logout endpoint
-      await axios.post('/logout/', { refresh_token: refreshToken });
+      await axios.post(`${BASE_URL}logout/`, { refresh_token: refreshToken },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
       
       // Clear localStorage
       localStorage.removeItem('accessToken');
@@ -108,6 +115,7 @@ const authSlice = createSlice({
       state.accessToken = action.payload.access;
       state.refreshToken = action.payload.refresh;
       state.isAuthenticated = true;
+      state.user=action.payload.user;
     });
     builder.addCase(login.rejected, (state, action) => {
       state.loading = false;

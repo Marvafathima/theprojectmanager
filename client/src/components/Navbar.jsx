@@ -70,7 +70,7 @@ export function NavbarWithSearch() {
     const handleLogout = () => {
       dispatch(logout());
       toast.success("logged out successfully")
-      navigate('/');
+      navigate('/login');
   };
 
 
