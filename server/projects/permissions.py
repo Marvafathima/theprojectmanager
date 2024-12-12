@@ -7,8 +7,10 @@ class IsProjectMemberOrAdmin(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
+        print("oooo\n\n\n\n\n\n\n\n\n$$$$$$$$$$$$$$$$$$$$$$$$",request.user)
         # Allow creation only to managers (is_staff) or admins (is_superuser)
         if view.action == 'create' and (request.user.is_staff or request.user.is_superuser):
+            print(request.user.is_staff)
             return True
         
         # Allow viewing projects to authenticated users who are project members

@@ -4,7 +4,7 @@ import { logout, setTokens } from './authSlice';
 import { BASE_URL } from '../config';
 // Create an axios instance
 const axiosInstance = axios.create({
-    baseURL:BASE_URL, 
+    baseURL:`api/${BASE_URL}`, 
 //   baseURL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api/',
 });
 

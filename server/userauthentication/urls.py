@@ -6,19 +6,21 @@
 #  path('api/token/', CustomTokenObtainPairView.as_view(), name='custom_token_obtain_pair'),
 #  path('logout/', LogoutView.as_view(), name='logout'),
 # ]
-from django.urls import path
+from django.urls import path,include
 from rest_framework_simplejwt.views import TokenVerifyView
 from .views import (
     SignupView, 
     CustomTokenObtainPairView, 
     CustomTokenRefreshView, 
-    LogoutView
+    LogoutView,UserViewSet
 )
-
+from rest_framework.routers import DefaultRouter
+router = DefaultRouter()
+router.register(r'users', UserViewSet)
 urlpatterns = [
     # Signup
     path('signup/', SignupView.as_view(), name='signup'),
-    
+     path('user/', include(router.urls)),
     # Token endpoints
     path('token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),

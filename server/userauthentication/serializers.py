@@ -44,3 +44,9 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             user_data['profile_pic'] = self.user.profile_pic.url
         data['user']=user_data
         return data
+    
+
+class CustomUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'username', 'profile_pic']

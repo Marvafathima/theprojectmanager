@@ -5,7 +5,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import UserSignupSerializer, CustomTokenObtainPairSerializer
-
+from .models import CustomUser
+from .serializers import CustomUserSerializer
+from rest_framework import viewsets
 class SignupView(APIView):
     permission_classes = [AllowAny]
     
@@ -69,3 +71,12 @@ class LogoutView(APIView):
                 {"error": "Invalid refresh token or logout failed"},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CustomUserSerializer
+    permission_classes = [IsAuthenticated]  # Ensure only authenticated users can access this
+    queryset = CustomUser.objects.exclude(role__in=['admin', 'project_manager'])
+
+    def get_queryset(self):
+        # Assuming `role` is a field in `CustomUser`, and roles are defined as 'admin' and 'project_manager'
+        return CustomUser.objects.exclude(role__in=['admin', 'project_manager'])

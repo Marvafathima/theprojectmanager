@@ -17,7 +17,7 @@ export const signup = createAsyncThunk(
   'auth/signup',
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${BASE_URL}signup/`, userData);
+      const response = await axios.post(`${BASE_URL}api/signup/`, userData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Signup failed');
@@ -29,7 +29,7 @@ export const login = createAsyncThunk(
   'auth/login',
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${BASE_URL}token/`, credentials);
+      const response = await axios.post(`${BASE_URL}api/token/`, credentials);
       
       // Store tokens in localStorage
       localStorage.setItem('accessToken', response.data.access);
@@ -51,7 +51,7 @@ export const logout = createAsyncThunk(
       const accessToken = localStorage.getItem('accessToken');
       console.log("refreshtoken",refreshToken)
       // Call logout endpoint
-      await axios.post(`${BASE_URL}logout/`, { refresh_token: refreshToken },
+      await axios.post(`${BASE_URL}api/logout/`, { refresh_token: refreshToken },
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,

@@ -52,7 +52,14 @@ class ProjectViewSet(viewsets.ModelViewSet):
         
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
-
+    
+    #to retrieve the latest two projects 
+    @action(detail=False, methods=['GET'], url_path='latest')
+    def latest(self, request):
+        # Retrieve the latest two projects
+        queryset = self.get_queryset().order_by('-created_at')[:2]
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated, IsTaskOwnerOrProjectMember]

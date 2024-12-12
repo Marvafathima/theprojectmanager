@@ -1,10 +1,10 @@
 from rest_framework import serializers
 from .models import Project, Task, ProjectMember
-from django.contrib.auth.models import User
-from userauthentication.models import CustomUser
+from django.contrib.auth import get_user_model
+User=get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CustomUser
+        model = User
         fields = ['id', 'username', 'email' , 'profile_pic']
 
 class ProjectSerializer(serializers.ModelSerializer):
