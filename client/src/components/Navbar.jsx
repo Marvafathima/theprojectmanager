@@ -16,7 +16,7 @@ export function NavbarWithSearch() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated, loading, error } = useSelector(state => state.auth);
-  const {role}=useSelector(state=>state.auth.user)
+  const {user}=useSelector(state=>state.auth)
   const [searchQuery, setSearchQuery] = useState('');
     // const user = useSelector(selectCurrentUser);
     const handleSearch = () => {
@@ -110,8 +110,8 @@ export function NavbarWithSearch() {
           Projects
         </a>
       </Typography>
-      
-      {role=="manager"? (<>
+
+      {user?.role=="manager"? (<>
         <Typography
         as="li"
         variant="small"

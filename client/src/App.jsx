@@ -8,6 +8,9 @@ import Login from './components/Login'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Dashboard } from './components/Dashboard'
 import { ToastContainer, toast } from 'react-toastify';
+import ManagerDashboard from './components/manager/ManagerDashboard'
+import { RoleProtectedRoute } from './routes/RoleProtectedRoute'
+import { ProtectedRoute } from './routes/ProtectedRoute'
 function App() {
 
 
@@ -15,10 +18,13 @@ function App() {
     <>
         <BrowserRouter>
        <Routes>
-     
        <Route path="/signup" element={<Signup/>}></Route>
        <Route path="/login" element={<Login/>}></Route>
+       {/* <Route path="/signup" element={<ProtectedRoute><Signup/></ProtectedRoute>}></Route> */}
+       {/* <Route path="/login" element={<ProtectedRoute><Login/></ProtectedRoute>}></Route> */}
       <Route path="/dashboard" element={<Dashboard/>}></Route>
+      <Route path="/hrdashboard" element={<RoleProtectedRoute allowedRoles={['manager']} > <ManagerDashboard/></RoleProtectedRoute>}></Route>
+    
        
         </Routes></BrowserRouter>  
         <ToastContainer/>
