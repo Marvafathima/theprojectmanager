@@ -145,7 +145,7 @@ const handleUpdateTask = async () => {
         status: taskToUpdate.status,
         priority: taskToUpdate.priority,
         project: projectId,
-        assigned_to: taskToUpdate.assigned_to ? taskToUpdate.assigned_to.id : null,
+        assigned_to_id: taskToUpdate.assigned_to ? taskToUpdate.assigned_to.id : null,
         start_date: taskToUpdate.start_date,
         due_date: taskToUpdate.due_date
       };

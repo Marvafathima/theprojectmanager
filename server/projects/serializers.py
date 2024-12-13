@@ -51,6 +51,18 @@ class ProjectSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     created_by = UserSerializer(read_only=True)
     assigned_to = UserSerializer(read_only=True)
+    assigned_to_id = serializers.PrimaryKeyRelatedField(
+        source='assigned_to',
+        queryset=User.objects.all(),
+        required=False,
+        allow_null=True,
+        write_only=True  # This field is for input only
+    )
+    # assigned_to = serializers.PrimaryKeyRelatedField(
+    #     queryset=User.objects.all(), 
+    #     required=False, 
+    #     allow_null=True
+    # )
     class Meta:
         model = Task
         fields = '__all__'
