@@ -18,8 +18,8 @@ import { Layout } from '../Layout'; // Your existing layout component
 import axiosInstance from '../../utils/axiosInstance';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import ProjectUpdateModal from './ProjectUpdateModal';
-const ProjectDetail = () => {
+
+const EmployeeProjectDetail = () => {
   // State management
   const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
@@ -28,12 +28,9 @@ const ProjectDetail = () => {
   const [users, setUsers] = useState([]);
   const { projectId } = useParams(); 
   const navigate=useNavigate();
-   // Task Creation Modal State
-   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-   const [selectedTask, setSelectedTask] = useState(null); // For task update
-   const [isDeleteTaskModalOpen, setIsDeleteTaskModalOpen] = useState(false); // Delete confirmation modal
+
+   const [selectedTask, setSelectedTask] = useState(null); // For task update 
   // Task Creation Modal State
-  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isTaskUpdateModalOpen, setIsTaskUpdateModalOpen] = useState(false);
 //   const [taskToUpdate, setTaskToUpdate] = useState(null);
   const [taskToUpdate, setTaskToUpdate] = useState({
@@ -88,27 +85,9 @@ const ProjectDetail = () => {
    
   };
 // Update Project
-const handleUpdateProject = async () => {
-    try {
-      await axiosInstance.put(`projects/${projectId}/`, project);
-      toast.success("Project updated successfully");
-      setIsProjectModalOpen(false); // Close modal
-      fetchProjectDetails(); // Refresh project details
-    } catch (err) {
-      toast.error("Failed to update project");
-    }
-  };
 
-  // Delete Project (if necessary)
-  const handleDeleteProject = async () => {
-    try {
-      await axiosInstance.delete(`projects/${projectId}/`);
-      toast.success("Project deleted successfully");
-      navigate("/projects"); // Redirect to projects
-    } catch (err) {
-      toast.error("Failed to delete project");
-    }
-  };
+
+  
 
 
 
@@ -151,24 +130,8 @@ const handleUpdateTask = async () => {
     }
   };
 
-  // Delete Task
-  const handleDeleteTask = async () => {
-    try {
-      await axiosInstance.delete(`tasks/${selectedTask.id}/`);
-      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== selectedTask.id));
-      toast.success("Task deleted successfully");
-      setIsDeleteTaskModalOpen(false); // Close delete modal
-    } catch (err) {
-      toast.error("Failed to delete task");
-    }
-  };
-
-  // Open Update Project Modal
-  const openProjectUpdateModal = () => {
-    setProject({ ...project }); // Set project state to enable editing in modal
-    setIsProjectModalOpen(true);
-  };
-
+ 
+ 
 const openTaskUpdateModal = (task) => {
     setTaskToUpdate({
       id: task.id,
@@ -186,11 +149,7 @@ const openTaskUpdateModal = (task) => {
   useEffect(() => {
     console.log('Current taskToUpdate:', taskToUpdate);
   }, [taskToUpdate]);
-  // Open Delete Task Modal
-  const openDeleteTaskModal = (task) => {
-    setSelectedTask(task);
-    setIsDeleteTaskModalOpen(true);
-  };
+ 
 
   // Validate Task Creation
   const validateTask = () => {
@@ -232,68 +191,7 @@ const openTaskUpdateModal = (task) => {
     return Object.keys(errors).length === 0;
   };
 
-  // Create New Task
-  const handleCreateTask = async () => {
-    // Validate task before submission
-    if (!validateTask()) {
-      return;
-    }
-
-    try {
-      const taskPayload = {
-        ...newTask,
-        project: projectId,
-        // Ensure only ID is sent for related fields
-        assigned_to_id: newTask.assigned_to ? newTask.assigned_to.id : null
-      };
-
-      const response = await axiosInstance.post('tasks/', taskPayload);
-
-      // Update tasks list
-      setTasks([...tasks, response.data]);
-      
-      // Close modal and reset form
-      setIsTaskModalOpen(false);
-      setNewTask({
-        title: '',
-        description: '',
-        status: 'to-do',
-        priority: 'medium',
-        assigned_to: null,
-        start_date: '',
-        due_date: ''
-      });
-      setValidationErrors({});
-    }
- 
-   
-    catch (err) {
-        // Handle backend validation errors
-        if (err.response && err.response.data.details) {
-          // Specific backend validation errors
-          console.log("Backend error details:", err.response.data.details);
-          
-          // If details is an object, convert to a string
-          const errorMessage = typeof err.response.data.details === 'object'
-            ? JSON.stringify(err.response.data.details)
-            : err.response.data.details;
-   
-    
-            setIsTaskModalOpen(false);
-          toast.error((errorMessage));
-        } else if (err.response && err.response.data) {
-          // Fallback to general response data
-          setIsTaskModalOpen(false);
-          toast.error(err.response.data.error || 'Failed to create task');
-        } else {
-          // Generic error fallback
-          setIsTaskModalOpen(false);
-          toast.error(err.message || 'An unexpected error occurred');
-        }
-        
-        console.error(err);
-      }
-  };
+  
 
   // Render validation error
   const renderValidationError = (field) => {
@@ -427,8 +325,7 @@ const openTaskUpdateModal = (task) => {
               </Typography>
              
             </div>
-            <Button onClick={() => openProjectUpdateModal()}>Edit</Button>
-                  <Button onClick={() => handleDeleteProject()}>Delete</Button>
+          
           </CardBody>
         </Card>
 
@@ -438,13 +335,7 @@ const openTaskUpdateModal = (task) => {
             <Typography variant="h5" color="blue-gray">
               Project Tasks
             </Typography>
-            <Button 
-              color="green" 
-              size="sm"
-              onClick={() => setIsTaskModalOpen(true)}
-            >
-              Add Task
-            </Button>
+            
           </div>
 
           {/* Tasks Grid */}
@@ -489,7 +380,7 @@ const openTaskUpdateModal = (task) => {
                       )}
                     </div>
                     <Button onClick={() => openTaskUpdateModal(task)}>Edit</Button>
-                  <Button onClick={() => openDeleteTaskModal(task)}>Delete</Button>
+                 
                 
                   </CardBody>
                 </Card>
@@ -498,155 +389,8 @@ const openTaskUpdateModal = (task) => {
           )}
         </div>
 
-        {/* Task Creation Modal */}
-        {/* Confirm Delete Task Dialog */}
-        <Dialog open={isDeleteTaskModalOpen} handler={() => setIsDeleteTaskModalOpen(false)}>
-          <DialogHeader>Confirm Delete</DialogHeader>
-          <DialogBody>
-            <Typography>Are you sure you want to delete this task?</Typography>
-          </DialogBody>
-          <DialogFooter>
-            <Button onClick={() => setIsDeleteTaskModalOpen(false)}>Cancel</Button>
-            <Button onClick={handleDeleteTask}>Delete</Button>
-          </DialogFooter>
-        </Dialog>
-        <Dialog 
-          open={isTaskModalOpen} 
-          handler={() => setIsTaskModalOpen(!isTaskModalOpen)}
-          className="bg-deep-orange-50"
-          size="lg"
-        >
-          <DialogHeader>Create New Task</DialogHeader>
-          <DialogBody divider>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Left Column */}
-              <div className="space-y-4">
-                <div>
-                  <Input 
-                    label="Task Title" 
-                    value={newTask.title}
-                    onChange={(e) => {
-                      setNewTask({...newTask, title: e.target.value});
-                   
-                      if (validationErrors.title) {
-                        const newErrors = {...validationErrors};
-                        delete newErrors.title;
-                        setValidationErrors(newErrors);
-                      }
-                    }}
-                    error={!!validationErrors.title}
-                  />
-                  {renderValidationError('title')}
-                </div>
-
-                <Input 
-                  label="Description" 
-                  value={newTask.description}
-                  onChange={(e) => setNewTask({...newTask, description: e.target.value})}
-                  type="textarea"
-                />
-
-                <div>
-                  <Select 
-                    label="Assigned To"
-                    value={newTask.assigned_to?.id}
-                    onChange={(val) => {
-                      const selectedUser = users.find(user => user.id === val);
-                      setNewTask({...newTask, assigned_to: selectedUser});
-                    }}
-                  >
-                    <Option value="">Unassigned</Option>
-                    {users.map((user) => (
-                      <Option key={user.id} value={user.id}>
-                        {user.username}
-                      </Option>
-                    ))}
-                  </Select>
-                </div>
-              </div>
-
-              {/* Right Column */}
-              <div className="space-y-4">
-                <Select 
-                  label="Status"
-                  value={newTask.status}
-                  onChange={(val) => setNewTask({...newTask, status: val})}
-                >
-                  <Option value="to-do">To Do</Option>
-                  <Option value="in-progress">In Progress</Option>
-                  <Option value="done">Done</Option>
-                </Select>
-
-                <Select 
-                  label="Priority"
-                  value={newTask.priority}
-                  onChange={(val) => setNewTask({...newTask, priority: val})}
-                >
-                  <Option value="low">Low</Option>
-                  <Option value="medium">Medium</Option>
-                  <Option value="high">High</Option>
-                </Select>
-
-                <div>
-                  <Input 
-                    label="Start Date" 
-                    type="date"
-                    value={newTask.start_date}
-                    onChange={(e) => {
-                      setNewTask({...newTask, start_date: e.target.value});
-                      // Clear start date error when changing
-                      if (validationErrors.start_date) {
-                        const newErrors = {...validationErrors};
-                        delete newErrors.start_date;
-                        setValidationErrors(newErrors);
-                      }
-                    }}
-                    error={!!validationErrors.start_date}
-                  />
-                  {renderValidationError('start_date')}
-                </div>
-
-                <div>
-                  <Input 
-                    label="Due Date" 
-                    type="date"
-                    value={newTask.due_date}
-                    onChange={(e) => {
-                      setNewTask({...newTask, due_date: e.target.value});
-                      // Clear due date error when changing
-                      if (validationErrors.due_date) {
-                        const newErrors = {...validationErrors};
-                        delete newErrors.due_date;
-                        setValidationErrors(newErrors);
-                      }
-                    }}
-                    error={!!validationErrors.due_date}
-                  />
-                  {renderValidationError('due_date')}
-                </div>
-              </div>
-            </div>
-          </DialogBody>
-          <DialogFooter>
-            <Button 
-              variant="text" 
-              color="red"
-              onClick={() => {
-                setIsTaskModalOpen(false);
-                setValidationErrors({});
-              }}
-              className="mr-2"
-            >
-              Cancel
-            </Button>
-            <Button 
-              color="green" 
-              onClick={handleCreateTask}
-            >
-              Create Task
-            </Button>
-          </DialogFooter>
-        </Dialog>
+        {/* Task update Modal */}
+       
        
          <Dialog
         open={isTaskUpdateModalOpen}
@@ -787,18 +531,10 @@ const openTaskUpdateModal = (task) => {
         </DialogFooter>
       </Dialog>
 
-      {project && (
-        <ProjectUpdateModal
-          project={project}
-          projectId={project.id}
-          isOpen={isProjectModalOpen}
-          onClose={() => setIsProjectModalOpen(false)}
-          fetchProjectDetails={fetchProjectDetails}
-        />
-      )}
+    
       </div>
     </Layout>
   );
 };
 
-export default ProjectDetail;
+export default EmployeeProjectDetail;

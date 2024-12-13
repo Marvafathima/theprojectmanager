@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
 
 from django.core.exceptions import ValidationError
-from .models import Project, Task
+from .models import Project, Task,ProjectMember
 from .serializers import ProjectSerializer, TaskSerializer
 from .permissions import IsProjectMemberOrAdmin, IsTaskOwnerOrProjectMember
 from .Pagination import StandardResultsSetPagination
@@ -25,9 +25,10 @@ class ProjectViewSet(viewsets.ModelViewSet):
             # Regular users see projects they are members of or created
             queryset = Project.objects.filter(
                 Q(members__user=self.request.user) | 
+                Q(tasks__assigned_to=self.request.user) | 
                 Q(created_by=self.request.user)
             ).distinct()
-        
+            
         # Optional filtering by specific user
         if user_id:
             queryset = queryset.filter(
@@ -78,39 +79,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         queryset = self.get_queryset().order_by('-created_at')[:2]
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-# class TaskViewSet(viewsets.ModelViewSet):
-#     serializer_class = TaskSerializer
-#     permission_classes = [IsAuthenticated, IsTaskOwnerOrProjectMember]
 
-#     def get_queryset(self):
-#         # Admins see all tasks
-#         if self.request.user.is_staff or self.request.user.is_superuser:
-#             return Task.objects.all()
-        
-#         # Regular users see tasks they created, assigned to, or in projects they're members of
-#         return Task.objects.filter(
-#             Q(created_by=self.request.user) | 
-#             Q(assigned_to=self.request.user) | 
-#             Q(project__members__user=self.request.user)
-#         ).distinct()
-
-#     def list(self, request):
-#         queryset = self.get_queryset()
-        
-#         # Filtering options
-#         status = request.query_params.get('status')
-#         priority = request.query_params.get('priority')
-#         assigned_user = request.query_params.get('assigned_user')
-        
-#         if status:
-#             queryset = queryset.filter(status=status)
-#         if priority:
-#             queryset = queryset.filter(priority=priority)
-#         if assigned_user:
-#             queryset = queryset.filter(assigned_to__username=assigned_user)
-        
-#         serializer = self.get_serializer(queryset, many=True)
-#         return Response(serializer.data)
 class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated, IsTaskOwnerOrProjectMember]
@@ -146,13 +115,26 @@ class TaskViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
     def perform_create(self, serializer):
         # Automatically set the created_by field to the current user
-        serializer.save(created_by=self.request.user)
+        task=serializer.save(created_by=self.request.user)
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
+        print("create task data",request.data)
         # Validate data
         if serializer.is_valid():
             # Save new task and return response
-            self.perform_create(serializer)
+            task=serializer.save(created_by=self.request.user)
+            # self.perform_create(serializer)
+            assigned_to = task.assigned_to
+            project = task.project
+
+            if assigned_to and project:
+                ProjectMember.objects.get_or_create(
+                    project=project,
+                    user=assigned_to,
+                    defaults={'role': 'member'}
+                )
+                print("project member created")
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         # If validation fails
@@ -164,10 +146,9 @@ class TaskViewSet(viewsets.ModelViewSet):
     def update(self, request, pk=None):
         task = self.get_object()  # Get task object based on primary key (id)
         serializer = self.get_serializer(task, data=request.data, partial=True)
-        print("\n\n\n\n\n\n&&&&&&&&&&&",request.data)
+        
         if serializer.is_valid():
             serializer.save()
-            print("\n\n\n\n\n\n&&&&&&&&&&&",serializer.data)  # Save the updated task
             return Response(serializer.data)  # Return the updated task data
 
         # If validation fails

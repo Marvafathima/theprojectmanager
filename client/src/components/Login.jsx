@@ -50,7 +50,7 @@ const handleSubmit = async () => {
       if (validateForm()){
         const resultAction = await dispatch(login(formData)).unwrap();
         console.log(resultAction)
-        if (resultAction.user && resultAction.user.role=="admin"){
+        if (resultAction.user && resultAction.user.role=="employee" ){
           navigate('/dashboard')
         }
         else{

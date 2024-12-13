@@ -58,11 +58,7 @@ class TaskSerializer(serializers.ModelSerializer):
         allow_null=True,
         write_only=True  # This field is for input only
     )
-    # assigned_to = serializers.PrimaryKeyRelatedField(
-    #     queryset=User.objects.all(), 
-    #     required=False, 
-    #     allow_null=True
-    # )
+   
     class Meta:
         model = Task
         fields = '__all__'
@@ -125,5 +121,5 @@ class TaskSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({
                     'assigned_to': 'User cannot be assigned another high priority task with the same deadline.'
                 })
-
+        
         return data

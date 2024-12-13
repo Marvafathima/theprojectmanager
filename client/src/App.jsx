@@ -14,6 +14,8 @@ import { ProtectedRoute } from './routes/ProtectedRoute'
 import UserProjects from './components/manager/UserProjects'
 import ProjectDetail from './components/manager/ProjectDetail'
 import { useParams } from 'react-router-dom'
+import EmployeeProjectDetail from './components/employee/EmployeeProjectDetail'
+import EmployeeProjects from './components/employee/EmployeeProjects'
 function App() {
 
 
@@ -26,10 +28,15 @@ function App() {
        {/* <Route path="/signup" element={<ProtectedRoute><Signup/></ProtectedRoute>}></Route> */}
        {/* <Route path="/login" element={<ProtectedRoute><Login/></ProtectedRoute>}></Route> */}
       <Route path="/dashboard" element={<Dashboard/>}></Route>
-      <Route path="/hrdashboard" element={<RoleProtectedRoute allowedRoles={['manager']} > <ManagerDashboard/></RoleProtectedRoute>}></Route>
-      <Route path="/projects" element={<RoleProtectedRoute allowedRoles={['manager']} > <UserProjects/></RoleProtectedRoute>}></Route>
-      <Route path="/projects/:projectId" element={<RoleProtectedRoute allowedRoles={['manager']} ><ProjectDetail projectId={useParams().projectId} /></RoleProtectedRoute>} 
-/>
+      <Route path="/hrdashboard" element={<RoleProtectedRoute allowedRoles={['manager','admin']} > <ManagerDashboard/></RoleProtectedRoute>}></Route>
+      <Route path="/projects" element={<RoleProtectedRoute allowedRoles={['manager','admin']} >
+         <UserProjects/></RoleProtectedRoute>}></Route>
+         <Route path="/myprojects" element={<RoleProtectedRoute allowedRoles={['employee']} >
+         <EmployeeProjects/></RoleProtectedRoute>}></Route>
+         <Route path="/myprojects/:projectId" element={<RoleProtectedRoute allowedRoles={['employee']} ><EmployeeProjectDetail projectId={useParams().projectId} /></RoleProtectedRoute>} />
+      
+
+      <Route path="/projects/:projectId" element={<RoleProtectedRoute allowedRoles={['manager','admin']} ><ProjectDetail projectId={useParams().projectId} /></RoleProtectedRoute>} />
        
         </Routes></BrowserRouter>  
         <ToastContainer/>

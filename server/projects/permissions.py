@@ -7,10 +7,10 @@ class IsProjectMemberOrAdmin(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        print("oooo\n\n\n\n\n\n\n\n\n$$$$$$$$$$$$$$$$$$$$$$$$",request.user)
+        
         # Allow creation only to managers (is_staff) or admins (is_superuser)
         if view.action == 'create' and (request.user.is_staff or request.user.is_superuser):
-            print(request.user.is_staff)
+            
             return True
         
         # Allow viewing projects to authenticated users who are project members
@@ -110,54 +110,3 @@ class IsTaskOwnerOrProjectMember(permissions.BasePermission):
         return False
 
 
-# from rest_framework import permissions
-# from .models import ProjectMember, Project, Task
-
-# class IsProjectMemberOrAdmin(permissions.BasePermission):
-#     def has_permission(self, request, view):
-#         # Allow create operations to admins or project members
-#         if request.user.is_staff or request.user.is_superuser:
-#             return True
-        
-#         return False  # allowing only managers or admin to create a project
-
-#     def has_object_permission(self, request, view, obj):
-#         # Always allow admins
-#         if request.user.is_staff or request.user.is_superuser:
-#             return True
-        
-#         # Check if user is a member of the project
-#         if isinstance(obj, Project):
-#             return ProjectMember.objects.filter(
-#                 project=obj, 
-#                 user=request.user
-#             ).exists()
-        
-#         # For tasks, check project membership
-#         if isinstance(obj, Task):
-#             return ProjectMember.objects.filter(
-#                 project=obj.project, 
-#                 user=request.user
-#             ).exists()
-        
-#         return False
-
-# class IsTaskOwnerOrProjectMember(permissions.BasePermission):
-#     def has_object_permission(self, request, view, obj):
-#         # Always allow admins
-#         if request.user.is_staff or request.user.is_superuser:
-#             return True
-        
-#         # Allow if user created the task
-#         if obj.created_by == request.user:
-#             return True
-        
-#         # Allow if task is assigned to the user
-#         if obj.assigned_to == request.user:
-#             return True
-        
-#         # Check project membership
-#         return ProjectMember.objects.filter(
-#             project=obj.project, 
-#             user=request.user
-#         ).exists()
