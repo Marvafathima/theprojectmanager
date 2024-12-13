@@ -18,6 +18,7 @@ import { Layout } from '../Layout'; // Your existing layout component
 import axiosInstance from '../../utils/axiosInstance';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import ProjectUpdateModal from './ProjectUpdateModal';
 const ProjectDetail = () => {
   // State management
   const [project, setProject] = useState(null);
@@ -110,32 +111,7 @@ const handleUpdateProject = async () => {
   };
 
 
-// const handleUpdateTask = async () => {
-//     if (!validateTask()) {
-//       return;
-//     }
-//     console.log("REACHED HERE",taskToUpdate)
-//     try {
-//       const response = await axiosInstance.put(`tasks/${taskToUpdate.id}/`, {
-//         ...newTask,
-//         project: projectId, // You might need to send project ID if your backend requires it
-//         assigned_to: newTask.assigned_to ? newTask.assigned_to.id : null, // Ensure to send only id
-//       });
 
-//       // Update the task list with new data
-//       setTasks((prevTasks) =>
-//         prevTasks.map((task) => (task.id === response.data.id ? response.data : task))
-//       );
-
-//       toast.success("Task updated successfully");
-//       setIsTaskUpdateModalOpen(false); // Close modal
-//       setTaskToUpdate(null); // Reset task to update state
-//     } catch (err) {
-//     setIsTaskUpdateModalOpen(false); 
-//       toast.error("Failed to update task");
-//       console.error(err);
-//     }
-//   };
 const handleUpdateTask = async () => {
     try {
       // Ensure all fields are included in the payload
@@ -174,46 +150,7 @@ const handleUpdateTask = async () => {
       }
     }
   };
-// const handleUpdateTask = async () => {
-//     // if (!validateTask()) {
-//     //   return;
-//     // }
-    
-//     try {
-//       const payload = {
-//         ...taskToUpdate,
-//         project: projectId,
-//         assigned_to: taskToUpdate.assigned_to ? taskToUpdate.assigned_to.id : null
-//       };
-  
-//       const response = await axiosInstance.put(`tasks/${taskToUpdate.id}/`, payload);
-      
-//       // Update the task list with new data
-//       setTasks((prevTasks) =>
-//         prevTasks.map((task) => (task.id === response.data.id ? response.data : task))
-//       );
 
-
-//       toast.success("Task updated successfully");
-//       setIsTaskUpdateModalOpen(false);
-//       setTaskToUpdate(null);
-//     } catch (err) {
-//       console.error('Update error:', err.response ? err.response.data : err);
-      
-//       // More detailed error handling
-//       if (err.response) {
-//         const errorDetails = err.response.data;
-//         toast.error(`Update failed: ${JSON.stringify(errorDetails)}`);
-        
-//         // If there are validation errors, set them
-//         if (errorDetails.details) {
-//           setValidationErrors(errorDetails.details);
-//         }
-//       } else {
-//         toast.error("Failed to update task");
-//       }
-//     }
-//   };
   // Delete Task
   const handleDeleteTask = async () => {
     try {
@@ -504,6 +441,8 @@ const openTaskUpdateModal = (task) => {
               </Typography>
              
             </div>
+            <Button onClick={() => openProjectUpdateModal()}>Edit</Button>
+                  <Button onClick={() => handleDeleteProject()}>Delete</Button>
           </CardBody>
         </Card>
 
@@ -777,21 +716,7 @@ const openTaskUpdateModal = (task) => {
                 </Option>
             ))}
             </Select>
-                {/* <Select
-                  label="Assigned To"
-                  value={taskToUpdate.assigned_to?.id}
-                  onChange={(val) => {
-                    const selectedUser = users.find(user => user.id === val);
-                    setTaskToUpdate({ ...taskToUpdate, assigned_to: selectedUser });
-                  }}
-                >
-                  <Option value="">Select</Option>
-                  {users.map((user) => (
-                    <Option key={user.id} value={user.id}>
-                      {user.username}
-                    </Option>
-                  ))}
-                </Select> */}
+              
               </div>
             </div>
 
@@ -875,6 +800,16 @@ const openTaskUpdateModal = (task) => {
           </Button>
         </DialogFooter>
       </Dialog>
+
+      {project && (
+        <ProjectUpdateModal
+          project={project}
+          projectId={project.id}
+          isOpen={isProjectModalOpen}
+          onClose={() => setIsProjectModalOpen(false)}
+          fetchProjectDetails={fetchProjectDetails}
+        />
+      )}
       </div>
     </Layout>
   );
