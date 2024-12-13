@@ -11,6 +11,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import ManagerDashboard from './components/manager/ManagerDashboard'
 import { RoleProtectedRoute } from './routes/RoleProtectedRoute'
 import { ProtectedRoute } from './routes/ProtectedRoute'
+import UserProjects from './components/manager/UserProjects'
 function App() {
 
 
@@ -24,6 +25,7 @@ function App() {
        {/* <Route path="/login" element={<ProtectedRoute><Login/></ProtectedRoute>}></Route> */}
       <Route path="/dashboard" element={<Dashboard/>}></Route>
       <Route path="/hrdashboard" element={<RoleProtectedRoute allowedRoles={['manager']} > <ManagerDashboard/></RoleProtectedRoute>}></Route>
+      <Route path="/projects" element={<RoleProtectedRoute allowedRoles={['manager']} > <UserProjects/></RoleProtectedRoute>}></Route>
     
        
         </Routes></BrowserRouter>  

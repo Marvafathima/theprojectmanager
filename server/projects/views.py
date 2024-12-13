@@ -7,34 +7,72 @@ from django.db.models import Q
 from .models import Project, Task
 from .serializers import ProjectSerializer, TaskSerializer
 from .permissions import IsProjectMemberOrAdmin, IsTaskOwnerOrProjectMember
-
+from .Pagination import StandardResultsSetPagination
 class ProjectViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectSerializer
     permission_classes = [IsAuthenticated, IsProjectMemberOrAdmin]
+    pagination_class = StandardResultsSetPagination 
+    # def get_queryset(self):
+    #     # Admins see all projects
+    #     if self.request.user.is_staff or self.request.user.is_superuser:
+    #         return Project.objects.all()
+        
+    #     # Regular users see projects they are members of or created
+    #     return Project.objects.filter(
+    #         Q(members__user=self.request.user) | 
+    #         Q(created_by=self.request.user)
+    #     ).distinct()
 
+    # def list(self, request):
+    #     # Optional filtering
+    #     queryset = self.get_queryset()
+        
+    #     # Filter by status
+    #     status = request.query_params.get('status')
+    #     if status:
+    #         queryset = queryset.filter(status=status)
+        
+    #     serializer = self.get_serializer(queryset, many=True)
+    #     return Response(serializer.data)
     def get_queryset(self):
-        # Admins see all projects
-        if self.request.user.is_staff or self.request.user.is_superuser:
-            return Project.objects.all()
+        # Get the user_id from query parameters
+        user_id = self.request.query_params.get('user_id')
         
-        # Regular users see projects they are members of or created
-        return Project.objects.filter(
-            Q(members__user=self.request.user) | 
-            Q(created_by=self.request.user)
-        ).distinct()
-
-    def list(self, request):
-        # Optional filtering
-        queryset = self.get_queryset()
+        # Base queryset for admins
+        if self.request.user.is_staff and self.request.user.is_superuser:
+            queryset = Project.objects.all()
+        else:
+            # Regular users see projects they are members of or created
+            queryset = Project.objects.filter(
+                Q(members__user=self.request.user) | 
+                Q(created_by=self.request.user)
+            ).distinct()
         
-        # Filter by status
-        status = request.query_params.get('status')
+        # Optional filtering by specific user
+        if user_id:
+            queryset = queryset.filter(
+                Q(created_by_id=user_id) | 
+                Q(members__user_id=user_id)
+            ).distinct()
+        
+        # Optional status filtering
+        status = self.request.query_params.get('status')
         if status:
             queryset = queryset.filter(status=status)
         
+        return queryset
+
+    def list(self, request):
+        queryset = self.get_queryset()
+        
+        # Pagination is now handled by the pagination_class
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-
     @action(detail=True, methods=['GET'])
     def tasks(self, request, pk=None):
         # Get tasks for a specific project
