@@ -20,6 +20,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import TaskUpdateModal from './TaskUpdateModal';
 import { useCallback } from 'react';
+import { useSelector } from 'react-redux';
 const EmployeeProjectDetail = () => {
   // State management
   const [project, setProject] = useState(null);
@@ -29,7 +30,7 @@ const EmployeeProjectDetail = () => {
   const [users, setUsers] = useState([]);
   const [isTaskUpdateModalOpen, setIsTaskUpdateModalOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState(null); // Task being edited
-  
+  const user=useSelector(state=>state.auth)
   
   const { projectId } = useParams(); 
   const navigate=useNavigate();
@@ -70,6 +71,7 @@ const EmployeeProjectDetail = () => {
       // Fetch project tasks
       const tasksResponse = await axiosInstance.get(`projects/${projectId}/tasks/`);
       setTasks(tasksResponse.data);
+      console.log("task data fetvched",tasksResponse.data)
       // Fetch users for assignment
       const usersResponse = await axiosInstance.get('api/user/users/');
       setUsers(usersResponse.data);
@@ -181,56 +183,7 @@ const EmployeeProjectDetail = () => {
   }, [taskToUpdate]);
  
 
-  // Validate Task Creation
-  const validateTask = () => {
-    const errors = {};
-    const today = new Date().toISOString().split('T')[0];
-
-    // Validate title
-    if (!newTask.title.trim()) {
-      errors.title = 'Task title is required';
-    }
-
-    // Validate start date
-    if (newTask.start_date < today) {
-      errors.start_date = 'Start date cannot be in the past';
-    }
-
-    // Validate due date
-    if (newTask.start_date && newTask.due_date) {
-      if (new Date(newTask.due_date) <= new Date(newTask.start_date)) {
-        errors.due_date = 'Due date must be after start date';
-      }
-    }
-
-    // Validate project date constraints
-    if (project) {
-      const projectStartDate = new Date(project.start_date).toISOString().split('T')[0];
-      const projectEndDate = new Date(project.end_date).toISOString().split('T')[0];
-
-      if (newTask.start_date < projectStartDate || newTask.start_date > projectEndDate) {
-        errors.start_date = `Start date must be between ${projectStartDate} and ${projectEndDate}`;
-      }
-
-      if (newTask.due_date < projectStartDate || newTask.due_date > projectEndDate) {
-        errors.due_date = `Due date must be between ${projectStartDate} and ${projectEndDate}`;
-      }
-    }
-
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  
-
-  // Render validation error
-  const renderValidationError = (field) => {
-    return validationErrors[field] ? (
-      <Typography variant="small" color="red" className="mt-1">
-        {validationErrors[field]}
-      </Typography>
-    ) : null;
-  };
+ 
   
 
   useEffect(() => {
@@ -409,7 +362,8 @@ const EmployeeProjectDetail = () => {
                         </Typography>
                       )}
                     </div>
-                    <Button onClick={() => openTaskUpdateModal(task)}>Edit</Button>
+                     <Button onClick={() => openTaskUpdateModal(task)}>Edit</Button>
+                    
                  
                 
                   </CardBody>

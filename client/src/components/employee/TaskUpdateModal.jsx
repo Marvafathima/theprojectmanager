@@ -30,14 +30,20 @@ const TaskUpdateModal = ({
   const handleUpdateTask = async () => {
     try {
       const response=await axiosInstance.patch(`tasks/${task.id}/`, { status: taskStatus });
+     
       toast.success("Task status updated successfully");
       onTaskUpdate(response.data);
       onClose();
     //   fetchTaskDetails(taskId);
     } catch (err) {
+     onClose(); 
+    if(err.response.status===403){
+        toast.error("Forbidden to edit tasks which are not assigned to you");
+    }
+    else{
       toast.error(`Failed to update task status:${err}`);
       console.error(err);
-    }
+    }}
   };
   useEffect(() => {
     setTaskStatus(task.status);
