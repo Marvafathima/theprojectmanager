@@ -145,19 +145,8 @@ const ProjectDetail = () => {
       });
       setValidationErrors({});
     }
-    //  catch (err) {
-    //   // Handle backend validation errors
-    //   if (err.response && err.response.data.details) {
-    //     console.log("error:",err.response.data.details)
-    //     toast.error(err.response.data.details)
-    //     setIsTaskModalOpen(false);
-    //     setValidationErrors(err.response.data.details);
-    //   } else {
-    //     // setError('Failed to create task');
-    //     toast.error(err)
-    //   }
-    //   console.error(err);
-    // }
+ 
+   
     catch (err) {
         // Handle backend validation errors
         if (err.response && err.response.data.details) {
@@ -168,9 +157,7 @@ const ProjectDetail = () => {
           const errorMessage = typeof err.response.data.details === 'object'
             ? JSON.stringify(err.response.data.details)
             : err.response.data.details;
-    //     const errorMessage = typeof details === 'object'
-    // ? Object.values(details).flat().join(', ') // Join all values into a single string
-    // : details;
+   
     
             setIsTaskModalOpen(false);
           toast.error((errorMessage));
@@ -197,44 +184,7 @@ const ProjectDetail = () => {
     ) : null;
   };
   
- // Create New Task
-//  const handleCreateTask = async () => {
-//     // Validation
-//     if (!newTask.title) {
-//       setError('Task title is required');
-//       return;
-//     }
 
-//     try {
-//       const taskPayload = {
-//         ...newTask,
-//         project: projectId,
-//         // Ensure only ID is sent for related fields
-//         assigned_to: newTask.assigned_to ? newTask.assigned_to.id : null
-//       };
-
-//       const response = await axiosInstance.post('tasks/', taskPayload);
-
-//       // Update tasks list
-//       setTasks([...tasks, response.data]);
-      
-//       // Close modal and reset form
-//       setIsTaskModalOpen(false);
-//       setNewTask({
-//         title: '',
-//         description: '',
-//         status: 'to-do',
-//         priority: 'medium',
-//         assigned_to: null,
-//         start_date: '',
-//         due_date: ''
-//       });
-//     } catch (err) {
-//       setError('Failed to create task');
-//       console.error(err);
-//     }
-//   };
-  // Initial data fetch
   useEffect(() => {
     fetchProjectDetails();
   }, [projectId]);
@@ -561,99 +511,7 @@ const ProjectDetail = () => {
             </Button>
           </DialogFooter>
         </Dialog>
-        {/* <Dialog 
-          open={isTaskModalOpen} 
-          handler={() => setIsTaskModalOpen(!isTaskModalOpen)}
-          className="bg-deep-orange-50"
-          size="lg"
-        >
-          <DialogHeader>Create New Task</DialogHeader>
-          <DialogBody divider>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Left Column */}
-              {/* <div className="space-y-4">
-                <Input 
-                  label="Task Title" 
-                  value={newTask.title}
-                  onChange={(e) => setNewTask({...newTask, title: e.target.value})}
-                  required
-                />
-               
-                <Input 
-                  label="Description" 
-                  value={newTask.description}
-                  onChange={(e) => setNewTask({...newTask, description: e.target.value})}
-                  type="textarea"
-                />
-                <Select 
-                  label="Assigned To"
-                  value={newTask.assigned_to?.id}
-                  onChange={(val) => {
-                    const selectedUser = users.find(user => user.id === val);
-                    setNewTask({...newTask, assigned_to: selectedUser});
-                  }}
-                >
-                  <Option value="">Unassigned</Option>
-                  {users.map((user) => (
-                    <Option key={user.id} value={user.id}>
-                      {user.username}
-                    </Option>
-                  ))}
-                </Select>
-              </div>  */}
-
-              {/* Right Column */}
-              {/* <div className="space-y-4">
-                <Select 
-                  label="Status"
-                  value={newTask.status}
-                  onChange={(val) => setNewTask({...newTask, status: val})}
-                >
-                  <Option value="to-do">To Do</Option>
-                  <Option value="in-progress">In Progress</Option>
-                  <Option value="done">Done</Option>
-                </Select>
-                <Select 
-                  label="Priority"
-                  value={newTask.priority}
-                  onChange={(val) => setNewTask({...newTask, priority: val})}
-                >
-                  <Option value="low">Low</Option>
-                  <Option value="medium">Medium</Option>
-                  <Option value="high">High</Option>
-                </Select>
-                <Input 
-                  label="Start Date" 
-                  type="date"
-                  value={newTask.start_date}
-                  onChange={(e) => setNewTask({...newTask, start_date: e.target.value})}
-                />
-                <Input 
-                  label="Due Date" 
-                  type="date"
-                  value={newTask.due_date}
-                  onChange={(e) => setNewTask({...newTask, due_date: e.target.value})}
-                />
-              </div>
-            </div>
-          </DialogBody>
-          <DialogFooter>
-            <Button 
-              variant="text" 
-              color="red"
-              onClick={() => setIsTaskModalOpen(false)}
-              className="mr-2"
-            >
-              Cancel
-            </Button>
-            <Button 
-              color="green" 
-              onClick={handleCreateTask}
-            >
-              Create Task
-            </Button>
-          </DialogFooter>
-        </Dialog> */}
+       
       </div>
     </Layout>
   );

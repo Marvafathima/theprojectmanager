@@ -46,42 +46,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         
         return project
 
-# class TaskSerializer(serializers.ModelSerializer):
-#     project = ProjectSerializer(read_only=True)
-#     project_id = serializers.PrimaryKeyRelatedField(
-#         queryset=Project.objects.all(), 
-#         source='project', 
-#         write_only=True
-#     )
-#     assigned_to = UserSerializer(read_only=True)
-#     assigned_to_id = serializers.PrimaryKeyRelatedField(
-#         queryset=User.objects.all(), 
-#         source='assigned_to', 
-#         write_only=True,
-#         required=False,
-#         allow_null=True
-#     )
-#     created_by = UserSerializer(read_only=True)
 
-#     class Meta:
-#         model = Task
-#         fields = [
-#             'id', 'title', 'description', 'project', 'project_id',
-#             'assigned_to', 'assigned_to_id', 'status', 'priority', 
-#             'start_date', 'due_date', 'created_by', 
-#             'created_at', 'updated_at', 'completed_at'
-#         ]
-#         read_only_fields = ['created_at', 'updated_at', 'completed_at', 'created_by']
-
-#     def create(self, validated_data):
-#         # Set the creator of the task to the current user
-#         user = self.context['request'].user
-#         validated_data['created_by'] = user
-        
-#         # Check if user is a member of the project
-#         project = validated_data['project']
-        
-#         return Task.objects.create(**validated_data)
     
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
