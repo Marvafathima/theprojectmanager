@@ -143,16 +143,73 @@ class TaskViewSet(viewsets.ModelViewSet):
             'details': serializer.errors  # This provides the detailed validation errors
         }, status=status.HTTP_400_BAD_REQUEST)
     
-    def update(self, request, pk=None):
-        task = self.get_object()  # Get task object based on primary key (id)
-        serializer = self.get_serializer(task, data=request.data, partial=True)
+    # def update(self, request, pk=None):
+    #     task = self.get_object()  # Get task object based on primary key (id)
+    #     serializer = self.get_serializer(task, data=request.data, partial=True)
         
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)  # Return the updated task data
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data)  # Return the updated task data
 
-        # If validation fails
+    #     # If validation fails
+    #     return Response({
+    #         'error': 'Validation failed',
+    #         'details': serializer.errors
+    #     }, status=status.HTTP_400_BAD_REQUEST)
+    
+
+    def update(self, request, *args, **kwargs):
+        task = self.get_object()
+        old_assigned_to = task.assigned_to
+        project = task.project
+
+        # Deserialize the request data
+        serializer = self.get_serializer(task, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            # Save the updated task
+            updated_task = serializer.save()
+            new_assigned_to = updated_task.assigned_to
+
+            # Handle reassignment: if the assigned user changed
+            if old_assigned_to != new_assigned_to:
+                # Remove old assigned user from ProjectMember if they have no other tasks
+                if old_assigned_to:
+                    has_other_tasks = Task.objects.filter(project=project, assigned_to=old_assigned_to).exists()
+                    if not has_other_tasks:
+                        ProjectMember.objects.filter(project=project, user=old_assigned_to).delete()
+                        print(f"Removed {old_assigned_to.username} from project '{project.title}'")
+
+                # Add new assigned user to ProjectMember
+                if new_assigned_to:
+                    ProjectMember.objects.get_or_create(
+                        project=project,
+                        user=new_assigned_to,
+                        defaults={'role': 'member'}
+                    )
+                    print(f"Added {new_assigned_to.username} to project '{project.title}'")
+
+            return Response(serializer.data)
+
         return Response({
             'error': 'Validation failed',
             'details': serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def destroy(self, request, *args, **kwargs):
+        task = self.get_object()
+        assigned_to = task.assigned_to
+        project = task.project
+
+        # Delete the task
+        response = super().destroy(request, *args, **kwargs)
+
+        # Check if the user has any other tasks in the project
+        if assigned_to and project:
+            has_other_tasks = Task.objects.filter(project=project, assigned_to=assigned_to).exists()
+            if not has_other_tasks:
+                ProjectMember.objects.filter(project=project, user=assigned_to).delete()
+                print(f"Removed {assigned_to.username} from project '{project.title}'")
+
+        return response
