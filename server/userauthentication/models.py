@@ -25,6 +25,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     ROLE_CHOICES = [
         ('manager', 'Manager'),
         ('employee', 'Employee'),
+       
     ]
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     is_active = models.BooleanField(default=True)
@@ -41,7 +42,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         # Automatically set is_staff=True if role is 'manager'
         if self.role == 'manager':
             self.is_staff = True
+        
         super().save(*args, **kwargs)
+        
     def __str__(self):
         return self.email 
 

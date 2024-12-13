@@ -49,8 +49,14 @@ const handleSubmit = async () => {
       // Using the loginUser thunk from your slice
       if (validateForm()){
         const resultAction = await dispatch(login(formData)).unwrap();
-        // dispatch(fetchUserDetails())
-        navigate('/dashboard');
+        console.log(resultAction)
+        if (resultAction.user && resultAction.user.role=="admin"){
+          navigate('/dashboard')
+        }
+        else{
+          navigate('/hrdashboard');
+        }
+        
       } 
     } catch (err) {
       // Redux Toolkit will handle the error state
@@ -64,10 +70,6 @@ const handleSubmit = async () => {
       [name]: value
     }));
   };
-//   const dispatch = useDispatch();
-//   const navigate = useNavigate();
-//   const loading = useSelector(selectAuthLoading);
-//   const reduxError = useSelector(selectAuthError);
 
   return (
     <Layout>

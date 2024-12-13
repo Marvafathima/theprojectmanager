@@ -36,7 +36,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             'id': self.user.id,
             'email': self.user.email,
             'username': self.user.username,
-            'role': self.user.role,
+            'role': self.user.role if self.user.role else 'admin' ,
             'joined_at': self.user.joined_at,
 
         }

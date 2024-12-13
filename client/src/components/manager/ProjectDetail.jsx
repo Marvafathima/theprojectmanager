@@ -169,20 +169,6 @@ const handleUpdateTask = async () => {
     setIsProjectModalOpen(true);
   };
 
-
-// const openTaskUpdateModal = (task) => {
-//     setTaskToUpdate({
-//         ...task,
-//         // Ensure assigned_to is handled correctly
-//         assigned_to: task.assigned_to ? 
-//           { id: task.assigned_to.id, username: task.assigned_to.username } : 
-//           null
-//       });
-      
-//       // Open the update modal
-//       setIsTaskUpdateModalOpen(true);
-    
-//   };
 const openTaskUpdateModal = (task) => {
     setTaskToUpdate({
       id: task.id,
