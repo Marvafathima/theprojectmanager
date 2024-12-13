@@ -104,8 +104,8 @@ export function NavbarWithSearch() {
           />
         </svg>
  
-        <a href="/explore" className="flex items-center font-extralight text-lg"
-        onClick={()=>handleExplore()}
+        <a href="/projects" className="flex items-center font-extralight text-lg"
+        
         >
           Projects
         </a>
@@ -132,7 +132,7 @@ export function NavbarWithSearch() {
             fill="#90A4AE"
           />
         </svg>
-        <a href="/dashboard" className="flex items-center font-extralight text-lg">
+        <a href="/hrdashboard" className="flex items-center font-extralight text-lg">
          Create Project
         </a>
       </Typography>

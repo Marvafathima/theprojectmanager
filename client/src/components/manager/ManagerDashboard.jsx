@@ -25,6 +25,8 @@ import Layout from '../Layout';
 import { toast } from 'react-toastify';
 import { BASE_URL } from '../../config';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../../utils/axiosInstance';
 const ManagerDashboard = () => {
 //   const [projects, setProjects] = useState([
 //     {
@@ -67,14 +69,15 @@ const [users, setUsers] = useState([]);
 const [openProjectModal, setOpenProjectModal] = useState(false);
 const [openTaskModal, setOpenTaskModal] = useState(false);
 const [selectedProject, setSelectedProject] = useState(null);
-const axiosInstance = axios.create({
-    baseURL: 'http://localhost:8000/',
-    withCredentials: true,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-    }
-  });
+const navigate=useNavigate();
+// const axiosInstance = axios.create({
+//     baseURL: 'http://localhost:8000/',
+//     withCredentials: true,
+//     headers: {
+//       'Content-Type': 'application/json',
+//       'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+//     }
+//   });
 // Project Form State
 const [projectForm, setProjectForm] = useState({
     title: '',
@@ -148,7 +151,7 @@ const [projectForm, setProjectForm] = useState({
 
     try {
         console.log("this is projectform",projectForm)
-      const response = await axios.post(`${BASE_URL}projects/`, projectForm, {
+      const response = await axiosInstance.post(`projects/`, projectForm, {
         headers: { 
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
           'Content-Type': 'application/json'
@@ -169,6 +172,7 @@ const [projectForm, setProjectForm] = useState({
       });
 
       toast.success('Project created successfully');
+      navigate("/projects")
     } catch (error) {
       toast.error('Failed to create project');
       console.error(error);
@@ -192,7 +196,7 @@ const [projectForm, setProjectForm] = useState({
     }
 
     try {
-      const response = await axios.post(`${BASE_URL}tasks/`, taskForm, {
+      const response = await axiosInstance.post(`tasks/`, taskForm, {
         headers: { 
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
           'Content-Type': 'application/json'

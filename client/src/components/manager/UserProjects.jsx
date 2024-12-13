@@ -12,7 +12,7 @@ import axios from 'axios';
 import { Layout } from '../Layout'; 
 import { BASE_URL } from '../../config';
 import { useSelector } from 'react-redux';
-
+import axiosInstance from '../../utils/axiosInstance';
 const UserProjects = () => {
   // State management
   const [projects, setProjects] = useState([]);
@@ -22,19 +22,19 @@ const UserProjects = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const user=useSelector(state=>state.auth)
-  const axiosInstance = axios.create({
-    baseURL: 'http://localhost:8000/',
-    withCredentials: true,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-    }
-  });
+//   const axiosInstance = axios.create({
+//     baseURL: 'http://localhost:8000/',
+//     withCredentials: true,
+//     headers: {
+//       'Content-Type': 'application/json',
+//       'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+//     }
+//   });
   // Fetch projects
   const fetchProjects = async () => {
     setIsLoading(true);
     try {
-      const response = await axiosInstance.get(`${BASE_URL}projects/`, {
+      const response = await axiosInstance.get(`projects/`, {
         params: {
           page: currentPage,
           status: projectStatus,
@@ -71,35 +71,51 @@ const UserProjects = () => {
     }
   };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // months are 0-indexed
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
   // Render project card
   const renderProjectCard = (project) => (
     <Card key={project.id} className="mb-4">
-      <CardHeader 
+      {/* <CardHeader 
         color="blue-gray" 
-        className="relative h-56"
-        // Optionally add project image
-      >
+        className="relative h-56" */}
+        {/* // Optionally add project image
+      > */}
         {/* <img 
           src={project.image_url || '/default-project-image.png'} 
           alt={project.title} 
           className="h-full w-full object-cover"
         /> */}
-      <Typography variant="h5" color="bule-gray" className="mb-2">
+      {/* <Typography variant="h5" color="bule-gray" className="mb-2">
           {project.title}
         </Typography>  
-      </CardHeader>
+      </CardHeader> */}
 
       <CardBody>
+      <Typography variant="h5" color="blue-gray" className="mb-2">
+          {project.title}
+        </Typography>
+        <Typography variant="h5" color="blue-gray" className="mb-2">
+        {formatDate(project.created_at)}
+        </Typography>
         <Typography variant="h5" color="blue-gray" className="mb-2">
           {project.name}
         </Typography>
+
         <Typography color="gray" className="mb-2">
           Status: {project.status}
         </Typography>
         <Typography color="gray" className="mb-4">
           {project.description}
         </Typography>
-        <Button variant="outlined" color="blue-gray">
+        <Button variant="outlined" color="blue-gray"
+        className='border-deep-orange-500 text-deep-orange-500'
+        >
           View Details
         </Button>
       </CardBody>
@@ -143,7 +159,8 @@ const UserProjects = () => {
         <div className="flex justify-center mt-6 space-x-4">
           <Button 
             variant="outlined" 
-            color="blue-gray" 
+            color="blue-gray"  
+            className='border-green-500 text-green-500'
             onClick={handlePrevPage} 
             disabled={currentPage === 1}
           >
@@ -154,7 +171,7 @@ const UserProjects = () => {
           </Typography>
           <Button 
             variant="outlined" 
-            color="blue-gray" 
+            className='border-green-500 text-green-500'
             onClick={handleNextPage} 
             disabled={currentPage === totalPages}
           >
