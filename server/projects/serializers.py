@@ -49,6 +49,8 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     
 class TaskSerializer(serializers.ModelSerializer):
+    created_by = UserSerializer(read_only=True)
+    assigned_to = UserSerializer(read_only=True)
     class Meta:
         model = Task
         fields = '__all__'

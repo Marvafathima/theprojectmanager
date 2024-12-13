@@ -164,9 +164,10 @@ class TaskViewSet(viewsets.ModelViewSet):
     def update(self, request, pk=None):
         task = self.get_object()  # Get task object based on primary key (id)
         serializer = self.get_serializer(task, data=request.data, partial=True)
-        
+        print("\n\n\n\n\n\n&&&&&&&&&&&",request.data)
         if serializer.is_valid():
-            serializer.save()  # Save the updated task
+            serializer.save()
+            print("\n\n\n\n\n\n&&&&&&&&&&&",serializer.data)  # Save the updated task
             return Response(serializer.data)  # Return the updated task data
 
         # If validation fails
