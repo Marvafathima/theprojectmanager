@@ -146,10 +146,25 @@ class TaskViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
-        try:
-            return super().create(request, *args, **kwargs)
-        except ValidationError as e:
-            return Response({
-                'error': 'Validation failed',
-                'details': e.detail
-            }, status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.get_serializer(data=request.data)
+        # Validate data
+        if serializer.is_valid():
+            # Save new task and return response
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        # If validation fails
+        return Response({
+            'error': 'Validation failed',
+            'details': serializer.errors  # This provides the detailed validation errors
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    # def create(self, request, *args, **kwargs):
+    #     try:
+    #         return super().create(request, *args, **kwargs)
+    #     except ValidationError as e:
+    #         print("\n\n\n\n\n\n\n\n\ndetail",e.detail)
+    #         return Response({
+    #             'error': 'Validation failed',
+    #             'details': e.detail
+    #         }, status=status.HTTP_400_BAD_REQUEST)

@@ -16,7 +16,8 @@ import {
 } from "@material-tailwind/react";
 import { Layout } from '../Layout'; // Your existing layout component
 import axiosInstance from '../../utils/axiosInstance';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 const ProjectDetail = () => {
   // State management
   const [project, setProject] = useState(null);
@@ -25,6 +26,7 @@ const ProjectDetail = () => {
   const [error, setError] = useState(null);
   const [users, setUsers] = useState([]);
   const { projectId } = useParams(); 
+  const navigate=useNavigate();
   // Task Creation Modal State
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [newTask, setNewTask] = useState({
@@ -60,6 +62,9 @@ const ProjectDetail = () => {
       setError('Failed to fetch project details');
       setProject(null);
       setTasks([]);
+      toast.error("Failed to fetch project details")
+      navigate("/projects")
+
     } finally {
       setIsLoading(false);
     }
@@ -139,15 +144,48 @@ const ProjectDetail = () => {
         due_date: ''
       });
       setValidationErrors({});
-    } catch (err) {
-      // Handle backend validation errors
-      if (err.response && err.response.data.details) {
-        setValidationErrors(err.response.data.details);
-      } else {
-        setError('Failed to create task');
-      }
-      console.error(err);
     }
+    //  catch (err) {
+    //   // Handle backend validation errors
+    //   if (err.response && err.response.data.details) {
+    //     console.log("error:",err.response.data.details)
+    //     toast.error(err.response.data.details)
+    //     setIsTaskModalOpen(false);
+    //     setValidationErrors(err.response.data.details);
+    //   } else {
+    //     // setError('Failed to create task');
+    //     toast.error(err)
+    //   }
+    //   console.error(err);
+    // }
+    catch (err) {
+        // Handle backend validation errors
+        if (err.response && err.response.data.details) {
+          // Specific backend validation errors
+          console.log("Backend error details:", err.response.data.details);
+          
+          // If details is an object, convert to a string
+          const errorMessage = typeof err.response.data.details === 'object'
+            ? JSON.stringify(err.response.data.details)
+            : err.response.data.details;
+    //     const errorMessage = typeof details === 'object'
+    // ? Object.values(details).flat().join(', ') // Join all values into a single string
+    // : details;
+    
+            setIsTaskModalOpen(false);
+          toast.error((errorMessage));
+        } else if (err.response && err.response.data) {
+          // Fallback to general response data
+          setIsTaskModalOpen(false);
+          toast.error(err.response.data.error || 'Failed to create task');
+        } else {
+          // Generic error fallback
+          setIsTaskModalOpen(false);
+          toast.error(err.message || 'An unexpected error occurred');
+        }
+        
+        console.error(err);
+      }
   };
 
   // Render validation error
