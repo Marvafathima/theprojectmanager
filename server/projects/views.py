@@ -144,7 +144,9 @@ class TaskViewSet(viewsets.ModelViewSet):
         
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-
+    def perform_create(self, serializer):
+        # Automatically set the created_by field to the current user
+        serializer.save(created_by=self.request.user)
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         # Validate data
