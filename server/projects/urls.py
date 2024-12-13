@@ -7,10 +7,6 @@ router = DefaultRouter()
 # router.register(r'tasks',TaskViewSet)
 router.register(r'projects', ProjectViewSet, basename='project')
 router.register(r'tasks', TaskViewSet, basename='task')
-urlpatterns = [
-    # Signup
-    # path('projects/', ProjectViewSet.as_view(), name='projects'),
-    # path('tasks/',TaskViewSet.as_view(), name='tasks'),
-    # path('projects/latest', ProjectViewSet.as_view(), name='projects'),
-path('', include(router.urls)),
+urlpatterns = [ 
+    path('', include(router.urls)),
 ]

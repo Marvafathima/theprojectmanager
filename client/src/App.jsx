@@ -12,6 +12,8 @@ import ManagerDashboard from './components/manager/ManagerDashboard'
 import { RoleProtectedRoute } from './routes/RoleProtectedRoute'
 import { ProtectedRoute } from './routes/ProtectedRoute'
 import UserProjects from './components/manager/UserProjects'
+import ProjectDetail from './components/manager/ProjectDetail'
+import { useParams } from 'react-router-dom'
 function App() {
 
 
@@ -26,7 +28,8 @@ function App() {
       <Route path="/dashboard" element={<Dashboard/>}></Route>
       <Route path="/hrdashboard" element={<RoleProtectedRoute allowedRoles={['manager']} > <ManagerDashboard/></RoleProtectedRoute>}></Route>
       <Route path="/projects" element={<RoleProtectedRoute allowedRoles={['manager']} > <UserProjects/></RoleProtectedRoute>}></Route>
-    
+      <Route path="/projects/:projectId" element={<RoleProtectedRoute allowedRoles={['manager']} ><ProjectDetail projectId={useParams().projectId} /></RoleProtectedRoute>} 
+/>
        
         </Routes></BrowserRouter>  
         <ToastContainer/>

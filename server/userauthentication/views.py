@@ -79,4 +79,4 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         # Assuming `role` is a field in `CustomUser`, and roles are defined as 'admin' and 'project_manager'
-        return CustomUser.objects.exclude(role__in=['admin', 'project_manager'])
+        return CustomUser.objects.exclude(role__in=['admin', 'manager'])

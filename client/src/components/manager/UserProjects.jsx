@@ -13,6 +13,7 @@ import { Layout } from '../Layout';
 import { BASE_URL } from '../../config';
 import { useSelector } from 'react-redux';
 import axiosInstance from '../../utils/axiosInstance';
+import { useNavigate } from 'react-router-dom';
 const UserProjects = () => {
   // State management
   const [projects, setProjects] = useState([]);
@@ -22,6 +23,7 @@ const UserProjects = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const user=useSelector(state=>state.auth)
+  const navigate=useNavigate();
 //   const axiosInstance = axios.create({
 //     baseURL: 'http://localhost:8000/',
 //     withCredentials: true,
@@ -78,6 +80,11 @@ const UserProjects = () => {
     const year = date.getFullYear();
     return `${day}-${month}-${year}`;
   };
+
+  const handleViewDetails = (projectId) => {
+    console.log("projectid:",projectId)
+    navigate(`/projects/${projectId}`); // Navigate to the project detail page
+  };
   // Render project card
   const renderProjectCard = (project) => (
     <Card key={project.id} className="mb-4">
@@ -115,6 +122,7 @@ const UserProjects = () => {
         </Typography>
         <Button variant="outlined" color="blue-gray"
         className='border-deep-orange-500 text-deep-orange-500'
+        onClick={()=>handleViewDetails(project.id)}
         >
           View Details
         </Button>
