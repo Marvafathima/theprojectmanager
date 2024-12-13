@@ -159,7 +159,7 @@ export function NavbarWithSearch() {
           />
         </svg>
  
-        <a href="/projects" className="flex items-center font-extralight text-lg"
+        <a href="/myprojects" className="flex items-center font-extralight text-lg"
         
         >
           Projects

@@ -18,7 +18,8 @@ import { Layout } from '../Layout'; // Your existing layout component
 import axiosInstance from '../../utils/axiosInstance';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-
+import TaskUpdateModal from './TaskUpdateModal';
+import { useCallback } from 'react';
 const EmployeeProjectDetail = () => {
   // State management
   const [project, setProject] = useState(null);
@@ -26,13 +27,15 @@ const EmployeeProjectDetail = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [users, setUsers] = useState([]);
+  const [isTaskUpdateModalOpen, setIsTaskUpdateModalOpen] = useState(false);
+  const [taskToEdit, setTaskToEdit] = useState(null); // Task being edited
+  
+  
   const { projectId } = useParams(); 
   const navigate=useNavigate();
-
+  
    const [selectedTask, setSelectedTask] = useState(null); // For task update 
-  // Task Creation Modal State
-  const [isTaskUpdateModalOpen, setIsTaskUpdateModalOpen] = useState(false);
-//   const [taskToUpdate, setTaskToUpdate] = useState(null);
+  //   const [taskToUpdate, setTaskToUpdate] = useState(null);
   const [taskToUpdate, setTaskToUpdate] = useState({
     id: null,
     title: '',
@@ -77,74 +80,101 @@ const EmployeeProjectDetail = () => {
       setProject(null);
       setTasks([]);
       toast.error("Failed to fetch project details")
-      navigate("/projects")
+      navigate("/myprojects")
 
     } finally {
       setIsLoading(false);
     }
    
   };
-// Update Project
-
-
-  
-
-
-
-const handleUpdateTask = async () => {
-    try {
-      // Ensure all fields are included in the payload
-      const payload = {
-        title: taskToUpdate.title,
-        description: taskToUpdate.description,
-        status: taskToUpdate.status,
-        priority: taskToUpdate.priority,
-        project: projectId,
-        assigned_to_id: taskToUpdate.assigned_to ? taskToUpdate.assigned_to.id : null,
-        start_date: taskToUpdate.start_date,
-        due_date: taskToUpdate.due_date
-      };
-  
-      const response = await axiosInstance.put(`tasks/${taskToUpdate.id}/`, payload);
-      
-      // Update the task list with new data
-      setTasks((prevTasks) =>
-        prevTasks.map((task) => (task.id === response.data.id ? response.data : task))
-      );
-  
-      toast.success("Task updated successfully");
-      setIsTaskUpdateModalOpen(false);
-    } catch (err) {
-      console.error('Update error:', err.response ? err.response.data : err);
-      
-      if (err.response) {
-        const errorDetails = err.response.data;
-        toast.error(`Update failed: ${JSON.stringify(errorDetails)}`);
-        
-        if (errorDetails.details) {
-          setValidationErrors(errorDetails.details);
-        }
-      } else {
-        toast.error("Failed to update task");
-      }
-    }
-  };
-
- 
- 
-const openTaskUpdateModal = (task) => {
-    setTaskToUpdate({
-      id: task.id,
-      title: task.title,
-      description: task.description,
-      status: task.status,
-      priority: task.priority,
-      assigned_to: task.assigned_to,
-      start_date: task.start_date,
-      due_date: task.due_date
-    });
+  const openTaskUpdateModal = (task) => {
+    setTaskToEdit(task);
     setIsTaskUpdateModalOpen(true);
   };
+
+  const handleTaskUpdate = (updatedTask) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) => (task.id === updatedTask.id ? updatedTask : task))
+    );
+    setIsTaskUpdateModalOpen(false);
+  };
+//   const fetchTaskDetails = useCallback(async () => {
+//     if (!taskId) {
+//       setError(new Error('No task ID provided'));
+//       setIsLoading(false);
+//       return null;
+//     }
+
+//     try {
+//       setIsLoading(true);
+//       const response = await axiosInstance.get(`tasks/${taskId}/`);
+//       setTasks(response.data);
+//       setError(null);
+//       return response.data;
+//     } catch (err) {
+//       const errorMessage = err.response?.data?.detail 
+//         || err.response?.data?.message 
+//         || 'Failed to fetch task details';
+      
+//       setError(err);
+//       toast.error(errorMessage);
+//       console.error('Task fetch error:', err);
+      
+//       return null;
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   }, []);
+
+//   useEffect(() => {
+//     fetchTaskDetails();
+//   }, [fetchTaskDetails]);
+
+// const fetchTaskDetails = useCallback(async (taskId) => {
+//     if (!taskId) {
+//       setError(new Error('No task ID provided'));
+//       setIsLoading(false);
+//       return null;
+//     }
+
+//     try {
+//       setIsLoading(true);
+//       const response = await axiosInstance.get(`tasks/${taskId}/`);
+//       setTask(response.data);
+//       setError(null);
+//       return response.data;
+//     } catch (err) {
+//       const errorMessage = err.response?.data?.detail 
+//         || err.response?.data?.message 
+//         || 'Failed to fetch task details';
+      
+//       setError(err);
+//       toast.error(errorMessage);
+//       console.error('Task fetch error:', err);
+      
+//       return null;
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   }, [taskId]);
+
+//   useEffect(() => {
+//     fetchTaskDetails();
+//   }, [fetchTaskDetails]);
+ 
+// const openTaskUpdateModal = (task) => {
+//     setTaskToUpdate({
+//       id: task.id,
+//       title: task.title,
+//       description: task.description,
+//       status: task.status,
+//       priority: task.priority,
+//       assigned_to: task.assigned_to,
+//       start_date: task.start_date,
+//       due_date: task.due_date
+//     });
+//     setIsTaskUpdateModalOpen(true);
+//   };
 
   useEffect(() => {
     console.log('Current taskToUpdate:', taskToUpdate);
@@ -383,156 +413,38 @@ const openTaskUpdateModal = (task) => {
                  
                 
                   </CardBody>
+                  {/* {task && (
+        <TaskUpdateModal
+          task={task}
+          taskId={task.id}
+          isOpen={isTaskUpdateModalOpen}
+          onClose={() => setIsTaskUpdateModalOpen(false)}
+          fetchTaskDetails={() => fetchTaskDetails(task.id)} 
+        />
+        )} */}
                 </Card>
+
+                
               ))}
             </div>
           )}
         </div>
 
-        {/* Task update Modal */}
        
-       
-         <Dialog
-        open={isTaskUpdateModalOpen}
-        handler={() => setIsTaskUpdateModalOpen(!isTaskUpdateModalOpen)}
-        className="bg-deep-orange-50"
-        size="lg"
-      >
-        <DialogHeader>Update Task</DialogHeader>
-        <DialogBody divider>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Left Column */}
-            <div className="space-y-4">
-              <div>
-                <Input
-                  label="Task Title"
-                  value={taskToUpdate.title}
-                  onChange={(e) => {
-                    setTaskToUpdate({ ...taskToUpdate, title: e.target.value });
-                    if (validationErrors.title) {
-                      const newErrors = { ...validationErrors };
-                      delete newErrors.title;
-                      setValidationErrors(newErrors);
-                    }
-                  }}
-                  error={!!validationErrors.title}
-                />
-                {renderValidationError('title')}
-              </div>
-
-              <Input
-                label="Description"
-                value={taskToUpdate.description}
-                onChange={(e) => setTaskToUpdate({ ...taskToUpdate, description: e.target.value })}
-                type="textarea"
-              />
-
-              <div>
-                        <Select
-            label="Assigned To"
-            value={taskToUpdate.assigned_to?.id || ''}
-            onChange={(val) => {
-                const selectedUser = users.find(user => user.id === val);
-                setTaskToUpdate(prev => ({ 
-                ...prev, 
-                assigned_to: selectedUser 
-                }));
-            }}
-            >
-            <Option value="">Select</Option>
-            {users.map((user) => (
-                <Option key={user.id} value={user.id}>
-                {user.username}
-                </Option>
-            ))}
-            </Select>
-              
-              </div>
-            </div>
-
-            {/* Right Column */}
-            <div className="space-y-4">
-              <Select
-                label="Status"
-                value={taskToUpdate.status}
-                onChange={(val) => setTaskToUpdate({ ...taskToUpdate, status: val })}
-              >
-                <Option value="to-do">To Do</Option>
-                <Option value="in-progress">In Progress</Option>
-                <Option value="done">Done</Option>
-              </Select>
-
-              <Select
-                label="Priority"
-                value={taskToUpdate.priority}
-                onChange={(val) => setTaskToUpdate({ ...taskToUpdate, priority: val })}
-              >
-                <Option value="low">Low</Option>
-                <Option value="medium">Medium</Option>
-                <Option value="high">High</Option>
-              </Select>
-
-              <div>
-                <Input
-                  label="Start Date"
-                  type="date"
-                  value={taskToUpdate.start_date}
-                  onChange={(e) => {
-                    setTaskToUpdate({ ...taskToUpdate, start_date: e.target.value });
-                    if (validationErrors.start_date) {
-                      const newErrors = { ...validationErrors };
-                      delete newErrors.start_date;
-                      setValidationErrors(newErrors);
-                    }
-                  }}
-                  error={!!validationErrors.start_date}
-                />
-                {renderValidationError('start_date')}
-              </div>
-
-              <div>
-                <Input
-                  label="Due Date"
-                  type="date"
-                  value={taskToUpdate.due_date}
-                  onChange={(e) => {
-                    setTaskToUpdate({ ...taskToUpdate, due_date: e.target.value });
-                    if (validationErrors.due_date) {
-                      const newErrors = { ...validationErrors };
-                      delete newErrors.due_date;
-                      setValidationErrors(newErrors);
-                    }
-                  }}
-                  error={!!validationErrors.due_date}
-                />
-                {renderValidationError('due_date')}
-              </div>
-            </div>
-          </div>
-        </DialogBody>
-        <DialogFooter>
-          <Button
-            variant="text"
-            color="red"
-            onClick={() => {
-              setIsTaskUpdateModalOpen(false);
-              setValidationErrors({});
-            }}
-            className="mr-2"
-          >
-            Cancel
-          </Button>
-          <Button
-            color="green"
-            onClick={handleUpdateTask}
-          >
-            Update Task
-          </Button>
-        </DialogFooter>
-      </Dialog>
 
     
       </div>
+{/* Task Update Modal */}
+{taskToEdit && (
+        <TaskUpdateModal
+          isOpen={isTaskUpdateModalOpen}
+          onClose={() => setIsTaskUpdateModalOpen(false)}
+          task={taskToEdit}
+          onTaskUpdate={handleTaskUpdate}
+        />
+      )}
+
+
     </Layout>
   );
 };
