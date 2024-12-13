@@ -159,12 +159,16 @@ class TaskViewSet(viewsets.ModelViewSet):
             'details': serializer.errors  # This provides the detailed validation errors
         }, status=status.HTTP_400_BAD_REQUEST)
     
-    # def create(self, request, *args, **kwargs):
-    #     try:
-    #         return super().create(request, *args, **kwargs)
-    #     except ValidationError as e:
-    #         print("\n\n\n\n\n\n\n\n\ndetail",e.detail)
-    #         return Response({
-    #             'error': 'Validation failed',
-    #             'details': e.detail
-    #         }, status=status.HTTP_400_BAD_REQUEST)
+    def update(self, request, pk=None):
+        task = self.get_object()  # Get task object based on primary key (id)
+        serializer = self.get_serializer(task, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()  # Save the updated task
+            return Response(serializer.data)  # Return the updated task data
+
+        # If validation fails
+        return Response({
+            'error': 'Validation failed',
+            'details': serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
