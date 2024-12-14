@@ -85,7 +85,6 @@ const handleSubmit = async (e) => {
         console.log("Form data to be sent:", Object.fromEntries(formDataToSend)); // Convert to object for easier logging
         const resultAction = await dispatch(signup(formDataToSend)).unwrap();
         toast.success("User Created successfully")
-        // dispatch(fetchUserDetails())
         navigate('/dashboard');
     } catch (err) {
      

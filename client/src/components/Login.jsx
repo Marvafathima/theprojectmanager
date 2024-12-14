@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 import Layout from './Layout';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-
+import { toast } from 'react-toastify';
 import { signup,login,logout } from '../slice/authSlice';
 export function Login() {
   const [formData, setFormData] = useState({
@@ -52,15 +52,25 @@ const handleSubmit = async () => {
         console.log(resultAction)
         if (resultAction.user && resultAction.user.role=="employee" ){
           navigate('/dashboard')
+          toast.success("login successfull.")
         }
         else{
           navigate('/hrdashboard');
+          toast.success("login successfull.")
         }
         
       } 
     } catch (err) {
-      // Redux Toolkit will handle the error state
       console.error('Login failed:', err);
+      if (err && typeof err === 'object') {
+        const errorMessages = Object.entries(err).map(([field, message]) => {
+          return `${field}: ${Array.isArray(message) ? message.join(', ') : message}`;
+        }).join('\n');
+  
+        toast.error(`Login failed:\n${errorMessages}`);
+      } else {
+        toast.error('Login failed. Please try again later.');
+      }
     }
   };
   const handleChange = (e) => {

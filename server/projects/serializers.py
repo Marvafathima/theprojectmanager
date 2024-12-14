@@ -97,6 +97,7 @@ class TaskSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({
                     'due_date': f'Due date must be between {project.start_date} and {project.end_date}'
                 })
+        task_id = self.instance.id if self.instance else None  # Get the ID of the task being updated
 
         # Check assigned user constraints
         assigned_to = data.get('assigned_to', None)
@@ -105,7 +106,8 @@ class TaskSerializer(serializers.ModelSerializer):
             existing_project_tasks = Task.objects.filter(
                 project=project, 
                 assigned_to=assigned_to
-            )
+
+            ).exclude(id=task_id)
             if existing_project_tasks.exists():
                 raise serializers.ValidationError({
                     'assigned_to': 'User is already assigned to a task in this project.'

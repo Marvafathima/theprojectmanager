@@ -100,37 +100,6 @@ const [projectForm, setProjectForm] = useState({
   });
 
   const handleOpenProjectModal = () => setOpenProjectModal(!openProjectModal);
-//   const handleOpenTaskModal = (project) => {
-//     setSelectedProject(project);
-//     setOpenTaskModal(!openTaskModal);
-//   };
-
-  // Fetch Projects and Users on Component Mount
-//   useEffect(() => {
-//     const fetchInitialData = async () => {
-//       try {
-//         // Fetch recent projects
-//         const projectsResponse = await axiosInstance.get(`projects/latest`, {
-//           headers: { 
-//             'Authorization': `Bearer ${localStorage.getItem('accessToken')}` 
-//           }
-//         });
-//         setProjects(projectsResponse.data);
-
-//         // Fetch users for task assignment
-//         const usersResponse = await axios.get(`${BASE_URL}api/user/users`, {
-//           headers: { 
-//             'Authorization': `Bearer ${localStorage.getItem('accessToken')}` 
-//           }
-//         });
-//         setUsers(usersResponse.data);
-//       } catch (error) {
-//         toast.error('Failed to fetch initial data');
-//       }
-//     };
-
-//     fetchInitialData();
-//   }, []);
 
   // Project Creation Handler
   const handleProjectCreate = async () => {
@@ -144,6 +113,11 @@ const [projectForm, setProjectForm] = useState({
     }
 
     // Validate date comparison
+    const today = new Date().toISOString().split('T')[0];
+    if (start_date < today) {
+      toast.error('Start date cannot be in the past');
+      return;
+    }
     if (new Date(end_date) <= new Date(start_date)) {
       toast.error('End date must be after start date');
       return;
@@ -173,9 +147,19 @@ const [projectForm, setProjectForm] = useState({
 
       toast.success('Project created successfully');
       navigate("/projects")
-    } catch (error) {
-      toast.error('Failed to create project');
-      console.error(error);
+    } catch (err) {
+
+      if (err && typeof err === 'object') {
+        const errorMessages = Object.entries(err).map(([field, message]) => {
+          return `${field}: ${Array.isArray(message) ? message.join(', ') : message}`;
+        }).join('\n');
+        setOpenProjectModal(false);
+        toast.error(`${errorMessages}`);
+      } else {
+        setOpenProjectModal(false);
+        toast.error('Failed to create project');
+      }
+     
     }
   };
 
@@ -190,6 +174,16 @@ const [projectForm, setProjectForm] = useState({
     }
 
     // Validate date comparison
+
+    const today = new Date();
+  today.setHours(0, 0, 0, 0); // Normalize today's date to midnight
+
+  const startDate = new Date(start_date);
+  startDate.setHours(0, 0, 0, 0);
+  if (startDate < today) {
+    toast.error('Start date cannot be in the past');
+    return;
+  }
     if (new Date(due_date) <= new Date(start_date)) {
       toast.error('Due date must be after start date');
       return;
