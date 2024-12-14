@@ -26,7 +26,6 @@ class ProjectSerializer(serializers.ModelSerializer):
             'id', 'title', 'description', 'start_date', 'end_date', 
             'status', 'created_by', 'created_at', 'updated_at', 'members','tasks'
         ]
-        # read_only_fields = ['created_at', 'updated_at']
 
     
     
