@@ -4,55 +4,55 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 User=get_user_model()
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'email' , 'profile_pic']
-class GetTaskSerializer(serializers.ModelSerializer):
+# class UserSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         fields = ['id', 'username', 'email' , 'profile_pic']
+# class GetTaskSerializer(serializers.ModelSerializer):
     
 
-    class Meta:
-        model = Task
-        fields =["status"]
+#     class Meta:
+#         model = Task
+#         fields =["status"]
 
     
-class ProjectSerializer(serializers.ModelSerializer):
-    created_by = UserSerializer(read_only=True)
-    members = serializers.SerializerMethodField()
-    tasks=GetTaskSerializer(many=True, read_only=True) 
-    class Meta:
-        model = Project
-        fields = [
-            'id', 'title', 'description', 'start_date', 'end_date', 
-            'status', 'created_by', 'created_at', 'updated_at', 'members','tasks'
-        ]
+# class ProjectSerializer(serializers.ModelSerializer):
+#     created_by = UserSerializer(read_only=True)
+#     members = serializers.SerializerMethodField()
+#     tasks=GetTaskSerializer(many=True, read_only=True) 
+#     class Meta:
+#         model = Project
+#         fields = [
+#             'id', 'title', 'description', 'start_date', 'end_date', 
+#             'status', 'created_by', 'created_at', 'updated_at', 'members','tasks'
+#         ]
 
     
     
-    def get_members(self, obj):
-        members = ProjectMember.objects.filter(project=obj)
-        return [
-            {
-                'user_id': member.user.id, 
-                'username': member.user.username, 
-                'role': member.role
-            } for member in members
-        ]
+#     def get_members(self, obj):
+#         members = ProjectMember.objects.filter(project=obj)
+#         return [
+#             {
+#                 'user_id': member.user.id, 
+#                 'username': member.user.username, 
+#                 'role': member.role
+#             } for member in members
+#         ]
 
-    def create(self, validated_data):
-        # Set the creator of the project to the current user
-        user = self.context['request'].user
-        validated_data['created_by'] = user
-        project = Project.objects.create(**validated_data)
+#     def create(self, validated_data):
+#         # Set the creator of the project to the current user
+#         user = self.context['request'].user
+#         validated_data['created_by'] = user
+#         project = Project.objects.create(**validated_data)
         
-        # Automatically add project creator as owner
-        ProjectMember.objects.create(
-            project=project, 
-            user=user, 
-            role='owner'
-        )
+#         # Automatically add project creator as owner
+#         ProjectMember.objects.create(
+#             project=project, 
+#             user=user, 
+#             role='owner'
+#         )
         
-        return project
+#         return project
 
 
     
@@ -142,6 +142,73 @@ class ProjectSerializer(serializers.ModelSerializer):
 #                 })
         
 #         return data
+class UserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the User model, including basic user information.
+    """
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'profile_pic']  # Fields to include in the serialized output
+
+
+class GetTaskSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Task model, focusing on task status.
+    """
+    class Meta:
+        model = Task
+        fields = ["status"]  # Only the task status is included
+
+
+class ProjectSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Project model. Handles project details, members, and associated tasks.
+    """
+    created_by = UserSerializer(read_only=True)  # The user who created the project (read-only)
+    members = serializers.SerializerMethodField()  # Custom field to fetch project members
+    tasks = GetTaskSerializer(many=True, read_only=True)  # Related tasks for the project (read-only)
+
+    class Meta:
+        model = Project
+        fields = [
+            'id', 'title', 'description', 'start_date', 'end_date', 
+            'status', 'created_by', 'created_at', 'updated_at', 'members', 'tasks'
+        ]  # Fields to include in the serialized output
+
+    def get_members(self, obj):
+        """
+        Retrieve the members of the project, including their roles.
+        """
+        members = ProjectMember.objects.filter(project=obj)  # Query all members of the project
+        return [
+            {
+                'user_id': member.user.id,  # Member's user ID
+                'username': member.user.username,  # Member's username
+                'role': member.role  # Member's role in the project
+            } for member in members
+        ]
+
+    def create(self, validated_data):
+        """
+        Override the default create method to:
+        - Assign the creator of the project to the current user.
+        - Automatically add the creator as an owner in the project members.
+        """
+        user = self.context['request'].user  # Get the current user from the request context
+        validated_data['created_by'] = user  # Set the creator of the project
+        
+        # Create the project with the validated data
+        project = Project.objects.create(**validated_data)
+
+        # Automatically add the project creator as an owner in the members table
+        ProjectMember.objects.create(
+            project=project,  # Link to the created project
+            user=user,  # The user creating the project
+            role='owner'  # Assign the role of 'owner'
+        )
+
+        return project
+
 class TaskSerializer(serializers.ModelSerializer):
     # Define read-only fields for user and project serializers
     created_by = UserSerializer(read_only=True)

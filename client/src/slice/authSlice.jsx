@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { BASE_URL } from '../config';
+import axiosInstance from '../utils/axiosInstance';
 import { fetchUserProjects } from './projectSlice';
 // Initial State
 import axios from 'axios';
@@ -57,7 +58,7 @@ export const logout = createAsyncThunk(
       const accessToken = localStorage.getItem('accessToken');
       console.log("refreshtoken",refreshToken)
       // Call logout endpoint
-      await axios.post(`${BASE_URL}api/logout/`, { refresh_token: refreshToken },
+      await axiosInstance.post(`api/logout/`, { refresh_token: refreshToken },
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
