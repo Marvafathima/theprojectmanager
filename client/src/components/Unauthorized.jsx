@@ -30,7 +30,7 @@ const Unauthorized = () => {
             <Button 
               color="red" 
               variant="outlined"
-              onClick={() => navigate('/')}
+              onClick={handleGoBack}
             >
               Go to Home
             </Button>
