@@ -185,7 +185,7 @@ export function NavbarWithSearch() {
             fill="#90A4AE"
           />
         </svg>
-        <a href="/dashboard" className="flex items-center font-extralight text-lg">
+        <a href="/tasklist" className="flex items-center font-extralight text-lg">
          Tasks
         </a>
       </Typography>

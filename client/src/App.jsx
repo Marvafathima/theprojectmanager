@@ -16,6 +16,8 @@ import ProjectDetail from './components/manager/ProjectDetail'
 import { useParams } from 'react-router-dom'
 import EmployeeProjectDetail from './components/employee/EmployeeProjectDetail'
 import EmployeeProjects from './components/employee/EmployeeProjects'
+import TaskDetailComponent from './components/employee/TaskDetailComponent'
+import TaskListComponent from './components/employee/TaskListComponent'
 function App() {
 
 
@@ -34,8 +36,9 @@ function App() {
          <Route path="/myprojects" element={<RoleProtectedRoute allowedRoles={['employee']} >
          <EmployeeProjects/></RoleProtectedRoute>}></Route>
          <Route path="/myprojects/:projectId" element={<RoleProtectedRoute allowedRoles={['employee']} ><EmployeeProjectDetail projectId={useParams().projectId} /></RoleProtectedRoute>} />
+      <Route path="/tasklist" element={<RoleProtectedRoute allowedRoles={['employee']} ><TaskListComponent/></RoleProtectedRoute>} />
+      <Route path="/task/:taskId" element={<RoleProtectedRoute allowedRoles={['employee']} ><TaskDetailComponent projectId={useParams().taskId} /></RoleProtectedRoute>} />
       
-
       <Route path="/projects/:projectId" element={<RoleProtectedRoute allowedRoles={['manager','admin']} ><ProjectDetail projectId={useParams().projectId} /></RoleProtectedRoute>} />
        
         </Routes></BrowserRouter>  
