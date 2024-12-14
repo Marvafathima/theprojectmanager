@@ -8,7 +8,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import ManagerDashboard from './components/manager/ManagerDashboard'
 import { RoleProtectedRoute } from './routes/RoleProtectedRoute'
 import { ProtectedRoute } from './routes/ProtectedRoute'
-import UserProjects from './components/manager/UserProjects'
+import ProjectListPage from './components/manager/ProjectListPage'
 import ProjectDetail from './components/manager/ProjectDetail'
 import { useParams } from 'react-router-dom'
 import EmployeeProjectDetail from './components/employee/EmployeeProjectDetail'
@@ -29,7 +29,7 @@ function App() {
      
     <Route path="/hrdashboard" element={<RoleProtectedRoute allowedRoles={['manager','admin']} > <ManagerDashboard/></RoleProtectedRoute>}></Route>
       <Route path="/projects" element={<RoleProtectedRoute allowedRoles={['manager','admin']} >
-         <UserProjects/></RoleProtectedRoute>}></Route>
+         <ProjectListPage/></RoleProtectedRoute>}></Route>
          <Route path="/myprojects" element={<RoleProtectedRoute allowedRoles={['employee']} >
          <EmployeeProjects/></RoleProtectedRoute>}></Route>
          <Route path="/myprojects/:projectId" element={<RoleProtectedRoute allowedRoles={['employee']} ><EmployeeProjectDetail projectId={useParams().projectId} /></RoleProtectedRoute>} />

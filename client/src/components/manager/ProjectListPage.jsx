@@ -16,7 +16,7 @@ import { useSelector } from 'react-redux';
 import axiosInstance from '../../utils/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-const UserProjects = () => {
+const ProjectListPage = () => {
   // State management
   const [projects, setProjects] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -125,30 +125,25 @@ const toggleSelectAll = () => {
     console.log("projectid:",projectId)
     navigate(`/projects/${projectId}`); // Navigate to the project detail page
   };
-  // Render project card
-  // const renderProjectCard = (project) => (
-  //   <Card key={project.id} className="mb-4">
-      
 
-  //     <CardBody>
-  //     <Typography variant="h5" color="blue-gray" className="mb-2">
-  //         {project.title}
-  //       </Typography>
+ 
   const renderProjectCard = (project) => (
-    <Card 
-      key={project.id} 
-      className={`mb-4 ${selectedProjects.includes(project.id) ? 'bg-blue-50' : ''}`}
-    >
-      {isSelectMode && (
-        <Checkbox
-          checked={selectedProjects.includes(project.id)}
-          onChange={() => toggleProjectSelection(project.id)}
-          containerProps={{
-            className: 'absolute top-2 right-2 z-10'
-          }}
-        />
-      )}
-
+  
+<Card 
+  key={project.id} 
+  className={`mb-4 mt-3 relative ${selectedProjects.includes(project.id) ? 'bg-blue-50' : ''}`}
+>
+  {isSelectMode && (
+    <div className="absolute top-2 right-2 z-10">
+      <Checkbox
+        checked={selectedProjects.includes(project.id)}
+        onChange={() => toggleProjectSelection(project.id)}
+        containerProps={{
+          className: 'inline-block'
+        }}
+      />
+    </div>
+  )}
       <CardBody>
         <Typography variant="h5" color="blue-gray" className="mb-2">
           {project.title}
@@ -184,58 +179,67 @@ const toggleSelectAll = () => {
           User Projects
         </Typography>
 {/* Bulk Actions */}
-<div className="flex justify-between items-center mb-4">
-          <Select 
-            label="Filter by Status"
-            value={projectStatus}
-            onChange={(val) => setProjectStatus(val)}
-          >
-            <Option value="">All Projects</Option>
-            <Option value="planned">Planned</Option>
-            <Option value="active">Active</Option>
-            <Option value="completed">Completed</Option>
-          </Select>
+<div className="flex flex-col space-y-4">
+  {/* Status Filter */}
+  <div className="flex justify-between items-center">
+    <Select 
+      label="Filter by Status"
+      value={projectStatus}
+      onChange={(val) => setProjectStatus(val)}
+      className="w-full sm:w-64"
+    >
+      <Option value="">All Projects</Option>
+      <Option value="planned">Planned</Option>
+      <Option value="active">Active</Option>
+      <Option value="completed">Completed</Option>
+    </Select>
+  </div>
 
-          <div className="flex items-center space-x-2">
-            <Button 
-              variant="outlined" 
-              color={isSelectMode ? 'red' : 'blue-gray'}
-              onClick={() => setIsSelectMode(!isSelectMode)}
-            >
-              {isSelectMode ? 'Cancel' : 'Select Projects'}
-            </Button>
-            {isSelectMode && (
-              <>
-                <Checkbox 
-                  label="Select All"
-                  checked={selectedProjects.length === projects.length}
-                  onChange={toggleSelectAll}
-                />
-                <Button 
-                  variant="filled" 
-                  color="red"
-                  disabled={selectedProjects.length === 0}
-                  onClick={handleBulkDelete}
-                >
-                  Delete Selected ({selectedProjects.length})
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
-        {/* Status Filter */}
-        {/* <div className="mb-4">
-          <Select 
-            label="Filter by Status"
-            value={projectStatus}
-            onChange={(val) => setProjectStatus(val)}
-          >
-            <Option value="">All Projects</Option>
-            <Option value="planned">Planned</Option>
-            <Option value="active">Active</Option>
-            <Option value="completed">Completed</Option>
-          </Select>
-        </div> */}
+  {/* Project Selection Actions */}
+  {isSelectMode && (
+    <div className="flex flex-wrap items-center space-x-2 space-y-2 mb-4">
+      <Checkbox 
+        label="Select All"
+        checked={selectedProjects.length === projects.length}
+        onChange={toggleSelectAll}
+        containerProps={{
+          className: 'w-full sm:w-auto'
+        }}
+      />
+      <Button 
+        variant="outlined" 
+        color="red"
+        onClick={() => setIsSelectMode(false)}
+        className="w-full sm:w-auto mb-4"
+      >
+        Cancel
+      </Button>
+      <Button 
+        variant="filled" 
+        color="red"
+        disabled={selectedProjects.length === 0}
+        onClick={handleBulkDelete}
+        className="w-full sm:w-auto mb-4"
+      >
+        Delete Selected ({selectedProjects.length})
+      </Button>
+    </div>
+  )}
+
+  {/* Default Select Projects Button */}
+  {!isSelectMode && (
+    <div>
+      <Button 
+        variant="outlined" 
+        color="blue-gray"
+        onClick={() => setIsSelectMode(true)}
+        className="w-full sm:w-auto"
+      >
+        Select Projects
+      </Button>
+    </div>
+  )}
+</div>
 
         {/* Projects Grid */}
         {isLoading ? (
@@ -278,4 +282,4 @@ const toggleSelectAll = () => {
   );
 };
 
-export default UserProjects;
+export default ProjectListPage;
