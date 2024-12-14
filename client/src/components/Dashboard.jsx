@@ -1,120 +1,28 @@
 import React, { useState,useEffect } from 'react';
 import { 
   Card, 
-  CardHeader, 
-  CardBody, 
-  Typography, 
-  Button, 
-  Chip,
-  Dialog,
-  DialogHeader,
-  DialogBody,
-  DialogFooter,
-  Input,
-  Select,
-  Option
+ Typography, 
+ 
 } from "@material-tailwind/react";
 
 import { 
   ChartPieIcon, 
-  PlusIcon,
   FolderIcon, 
   ClipboardDocumentListIcon 
 } from "@heroicons/react/24/solid";
 
 import Layout from './Layout';
-import { toast } from 'react-toastify';
 import { fetchUserProjects } from '../slice/projectSlice';
-import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../utils/axiosInstance';
 import { useDispatch, useSelector } from 'react-redux';
 const Dashboard = () => {
 
 
-// const [projects, setProjects] = useState([]);
 
-// const [openProjectModal, setOpenProjectModal] = useState(false);
-
-// const navigate=useNavigate();
 const dispatch=useDispatch();
 const { userprojects, loading, error } = useSelector((state) => state.project);
   useEffect(() => {
     dispatch(fetchUserProjects());
   }, [dispatch]);
-// Project Form State
-// const [projectForm, setProjectForm] = useState({
-//     title: '',
-//     description: '',
-//     start_date: '',
-//     end_date: '',
-//     status: 'planned'
-//   });
-
-
-
-  // const handleOpenProjectModal = () => setOpenProjectModal(!openProjectModal);
-
-  // Project Creation Handler
-  // const handleProjectCreate = async () => {
-    // Validate project form
-    // const { title, description, start_date, end_date, status } = projectForm;
-    // console.log("this is projectform",projectForm)
-    // Validate required fields
-    // if (!title || !start_date || !end_date) {
-    //   toast.error('Please fill in all required fields');
-    //   return;
-    // }
-
-    // Validate date comparison
-    // const today = new Date().toISOString().split('T')[0];
-    // if (start_date < today) {
-    //   toast.error('Start date cannot be in the past');
-    //   return;
-    // }
-    // if (new Date(end_date) <= new Date(start_date)) {
-    //   toast.error('End date must be after start date');
-    //   return;
-    // }
-
-    // try {
-    //     console.log("this is projectform",projectForm)
-    //   const response = await axiosInstance.post(`projects/`, projectForm, {
-    //     headers: { 
-    //       'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-    //       'Content-Type': 'application/json'
-    //     }
-    //   });
-
-      // Add new project to the list
-      // setProjects([response.data, ...projects]);
-      
-      // Close modal and reset form
-  //     setOpenProjectModal(false);
-  //     setProjectForm({
-  //       title: '',
-  //       description: '',
-  //       start_date: '',
-  //       end_date: '',
-  //       status: 'planned'
-  //     });
-
-  //     toast.success('Project created successfully');
-  //     navigate("/projects")
-  //   } catch (err) {
-
-  //     if (err && typeof err === 'object') {
-  //       const errorMessages = Object.entries(err).map(([field, message]) => {
-  //         return `${field}: ${Array.isArray(message) ? message.join(', ') : message}`;
-  //       }).join('\n');
-  //       setOpenProjectModal(false);
-  //       toast.error(`${errorMessages}`);
-  //     } else {
-  //       setOpenProjectModal(false);
-  //       toast.error('Failed to create project');
-  //     }
-     
-  //   }
-  // };
 
 
 // Calculate project statistics
@@ -177,16 +85,6 @@ const RecentProjectCard = ({ project }) => (
 
  
 
-  // Form input change handlers
-  // const handleProjectInputChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setProjectForm(prev => ({
-  //     ...prev,
-  //     [name]: value
-  //   }));
-  // };
-
- 
 
   return (
     <Layout>
@@ -255,65 +153,7 @@ const RecentProjectCard = ({ project }) => (
         )}
         
 
-        {/* Project Creation Modal */}
-        {/* <Dialog open={openProjectModal} handler={() => setOpenProjectModal(false)}>
-        <DialogHeader>Create New Project</DialogHeader>
-        <DialogBody divider>
-          <div className="grid gap-4">
-            <Input 
-              label="Project Title" 
-              name="title"
-              value={projectForm.title}
-              onChange={handleProjectInputChange}
-            />
-            <Input 
-              label="Description" 
-              name="description"
-              value={projectForm.description}
-              onChange={handleProjectInputChange}
-            />
-            <Input 
-              type="date" 
-              label="Start Date" 
-              name="start_date"
-              value={projectForm.start_date}
-              onChange={handleProjectInputChange}
-            />
-            <Input 
-              type="date" 
-              label="End Date" 
-              name="end_date"
-              value={projectForm.end_date}
-              onChange={handleProjectInputChange}
-            />
-            <Select 
-              label="Status"
-              name="status"
-              value={projectForm.status}
-              onChange={(val) => setProjectForm(prev => ({...prev, status: val}))}
-            >
-              <Option value="planned">Planned</Option>
-              <Option value="active">Active</Option>
-              <Option value="completed">Completed</Option>
-            </Select>
-          </div>
-        </DialogBody>
-        <DialogFooter>
-          <Button 
-            variant="text" 
-            color="red" 
-            onClick={() => setOpenProjectModal(false)}
-          >
-            Cancel
-          </Button>
-          <Button 
-            color="green" 
-            onClick={handleProjectCreate}
-          >
-            Create Project
-          </Button>
-        </DialogFooter>
-      </Dialog> */}
+       
 
      
       </div>

@@ -6,7 +6,7 @@ import {
   DialogBody,
   DialogFooter,
   Select,
-  Option
+  Option,Spinner
 } from "@material-tailwind/react";
 import { toast } from 'react-toastify';
 import axiosInstance from '../../utils/axiosInstance'; 
@@ -20,7 +20,8 @@ const TaskUpdateModal = ({
 //   fetchTaskDetails 
 }) => {
   const [taskStatus, setTaskStatus] = useState(task.status);
-
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const STATUS_OPTIONS = [
     { value: 'to-do', label: 'To Do' },
     { value: 'in-progress', label: 'In Progress' },
@@ -28,7 +29,9 @@ const TaskUpdateModal = ({
   ];
 
   const handleUpdateTask = async () => {
+    setLoading(true); 
     try {
+      
       const response=await axiosInstance.patch(`tasks/${task.id}/`, { status: taskStatus });
      
       toast.success("Task status updated successfully");
@@ -36,6 +39,7 @@ const TaskUpdateModal = ({
       onClose();
     //   fetchTaskDetails(taskId);
     } catch (err) {
+
      onClose(); 
     if(err.response.status===403){
         toast.error("Forbidden to edit tasks which are not assigned to you");
@@ -44,11 +48,19 @@ const TaskUpdateModal = ({
       toast.error(`Failed to update task status:${err}`);
       console.error(err);
     }}
+    finally {
+      setLoading(false);
+    }
   };
+
   useEffect(() => {
     setTaskStatus(task.status);
   }, [task]);
-
+  if (loading) {
+    <div className="flex justify-center items-center h-full">
+        <Spinner className="h-12 w-12" />
+      </div>
+  }
   return (
     <Dialog 
       open={isOpen} 

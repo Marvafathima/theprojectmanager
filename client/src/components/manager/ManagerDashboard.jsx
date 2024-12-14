@@ -13,7 +13,8 @@ import {
   DialogFooter,
   Input,
   Select,
-  Option
+  Option,
+  Spinner
 } from "@material-tailwind/react";
 
 import { 
@@ -198,7 +199,9 @@ const RecentProjectCard = ({ project }) => (
 
        
    {loading=="pending" ? (
-          <Typography>Loading...</Typography>
+          <div className="flex items-center justify-center h-screen">
+          <Spinner className="h-16 w-16 text-deep_orange-500" />
+        </div>
         ) : error ? (
           <Typography color="red">Error: {error}</Typography>
         ) : (

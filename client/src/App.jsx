@@ -1,8 +1,5 @@
-import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
+
 import './App.css'
-import Layout from './components/Layout'
 import Signup from './components/Signup'
 import Login from './components/Login'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -18,7 +15,6 @@ import EmployeeProjectDetail from './components/employee/EmployeeProjectDetail'
 import EmployeeProjects from './components/employee/EmployeeProjects'
 import TaskDetailComponent from './components/employee/TaskDetailComponent'
 import TaskListComponent from './components/employee/TaskListComponent'
-import AdminDashboard from './components/manager/AdminDashboard'
 function App() {
 
 
@@ -28,12 +24,10 @@ function App() {
        <Routes>
        <Route path="/signup" element={<Signup/>}></Route>
        <Route path="/login" element={<Login/>}></Route>
-       {/* <Route path="/signup" element={<ProtectedRoute><Signup/></ProtectedRoute>}></Route> */}
-       {/* <Route path="/login" element={<ProtectedRoute><Login/></ProtectedRoute>}></Route> */}
-      <Route path="/dashboard" element={<Dashboard/>}></Route>
+      
+      <Route path="/dashboard" element={<RoleProtectedRoute allowedRoles={['employee']}><Dashboard/></RoleProtectedRoute>}></Route>
      
-      {/* <Route path="/hrdashboard" element={<RoleProtectedRoute allowedRoles={['manager','admin']} > <AdminDashboard/></RoleProtectedRoute>}></Route> */}
-      <Route path="/hrdashboard" element={<RoleProtectedRoute allowedRoles={['manager','admin']} > <ManagerDashboard/></RoleProtectedRoute>}></Route>
+    <Route path="/hrdashboard" element={<RoleProtectedRoute allowedRoles={['manager','admin']} > <ManagerDashboard/></RoleProtectedRoute>}></Route>
       <Route path="/projects" element={<RoleProtectedRoute allowedRoles={['manager','admin']} >
          <UserProjects/></RoleProtectedRoute>}></Route>
          <Route path="/myprojects" element={<RoleProtectedRoute allowedRoles={['employee']} >

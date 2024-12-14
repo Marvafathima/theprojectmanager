@@ -6,7 +6,7 @@ import {
   Typography, 
   Button, 
   Select, 
-  Option 
+  Option ,Spinner
 } from "@material-tailwind/react";
 import axios from 'axios';
 import { Layout } from '../Layout'; 
@@ -141,7 +141,9 @@ const EmployeeProjects = () => {
 
         {/* Projects Grid */}
         {isLoading ? (
-          <Typography>Loading projects...</Typography>
+           <div className="flex items-center justify-center ">
+           <Spinner className="h-16 w-16 text-deep_orange-500" />
+         </div>
         ) : error ? (
           <Typography color="red">{error}</Typography>
         ) : (

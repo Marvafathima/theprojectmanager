@@ -12,7 +12,7 @@ import {
   DialogFooter,
   Input,
   Select,
-  Option
+  Option,Spinner
 } from "@material-tailwind/react";
 import { Layout } from '../Layout'; // Your existing layout component
 import axiosInstance from '../../utils/axiosInstance';
@@ -195,9 +195,9 @@ const EmployeeProjectDetail = () => {
     return (
       <Layout>
         <div className="container mx-auto p-4">
-          <Typography variant="h4" color="blue-gray">
-            Loading Project Details...
-          </Typography>
+        <div className="flex items-center justify-center h-screen">
+        <Spinner className="h-16 w-16 text-deep_orange-500" />
+      </div>
         </div>
       </Layout>
     );

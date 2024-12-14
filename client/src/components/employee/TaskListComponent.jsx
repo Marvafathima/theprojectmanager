@@ -10,7 +10,7 @@ import {
   Dialog,
   DialogHeader,
   DialogBody,
-  DialogFooter
+  DialogFooter,Spinner
 } from "@material-tailwind/react";
 import Layout from '../Layout';
 import { EyeIcon } from "@heroicons/react/24/solid";
@@ -22,6 +22,8 @@ const TaskListComponent = () => {
   const [tasks, setTasks] = useState([]);
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [totalPages, setTotalPages] = useState(1);
   const [filters, setFilters] = useState({
     status: '',
@@ -36,12 +38,17 @@ const [isModalOpen, setIsModalOpen] = useState(false);
   // Fetch tasks
   const fetchTasks = async () => {
     try {
+      setIsLoading(true)
       const response = await axiosInstance.get('mytasks/');
+      
       setTasks(response.data);
       setFilteredTasks(response.data);
       setTotalPages(Math.ceil(response.data.length / 10)); // 10 items per page
     } catch (error) {
       console.error('Error fetching tasks:', error);
+    }
+    finally{
+      setIsLoading(false)
     }
   };
 
@@ -92,14 +99,17 @@ const [isModalOpen, setIsModalOpen] = useState(false);
   const handleViewTask = (task) => {
     setSelectedTask(task);
     setIsModalOpen(true);
-    // Navigate to task detail or open modal
-    // navigate(`/task/${taskId}`)
-    // console.log('View task:', taskId);
+   
   };
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedTask(null);
   };
+  if (isLoading) {
+    <div className="flex justify-center items-center h-full">
+        <Spinner className="h-12 w-12" />
+      </div>
+  }
   return (
   <Layout>
     <Card className="h-full w-full p-4">
