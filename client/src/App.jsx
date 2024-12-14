@@ -15,6 +15,8 @@ import EmployeeProjectDetail from './components/employee/EmployeeProjectDetail'
 import EmployeeProjects from './components/employee/EmployeeProjects'
 import TaskDetailComponent from './components/employee/TaskDetailComponent'
 import TaskListComponent from './components/employee/TaskListComponent'
+import AdminLogin from './components/admin/AdminLogin';
+import AdminDashboard from './components/admin/AdminDashboard';
 function App() {
 
 
@@ -26,6 +28,8 @@ function App() {
        <Route path="/login" element={<Login/>}></Route>
       
       <Route path="/dashboard" element={<RoleProtectedRoute allowedRoles={['employee']}><Dashboard/></RoleProtectedRoute>}></Route>
+      <Route path="/adminlogin" element={ <AdminLogin/>}></Route>
+      <Route path="/admindashboard" element={<RoleProtectedRoute allowedRoles={['admin']} > <AdminDashboard/></RoleProtectedRoute>}></Route>
      
     <Route path="/hrdashboard" element={<RoleProtectedRoute allowedRoles={['manager','admin']} > <ManagerDashboard/></RoleProtectedRoute>}></Route>
       <Route path="/projects" element={<RoleProtectedRoute allowedRoles={['manager','admin']} >
