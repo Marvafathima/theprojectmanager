@@ -6,7 +6,7 @@ import Layout from './components/Layout'
 import Signup from './components/Signup'
 import Login from './components/Login'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Dashboard } from './components/Dashboard'
+import  Dashboard  from './components/Dashboard'
 import { ToastContainer, toast } from 'react-toastify';
 import ManagerDashboard from './components/manager/ManagerDashboard'
 import { RoleProtectedRoute } from './routes/RoleProtectedRoute'
