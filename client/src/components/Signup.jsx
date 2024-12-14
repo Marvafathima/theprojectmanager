@@ -203,7 +203,7 @@ const handleSubmit = async (e) => {
       >
         <Option value="manager">Manager</Option>
         <Option value="employee">Employee</Option>
-        <Option value="admin">Admin</Option>
+       
       </Select>
       {errors.role && (
         <Typography 
