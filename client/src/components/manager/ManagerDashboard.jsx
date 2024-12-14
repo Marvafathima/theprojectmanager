@@ -23,46 +23,12 @@ import {
 } from "lucide-react";
 import Layout from '../Layout';
 import { toast } from 'react-toastify';
-import { BASE_URL } from '../../config';
-import axios from 'axios';
+import { fetchUserProjects } from '../../slice/projectSlice';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosInstance';
+import { useSelector } from 'react-redux';
 const ManagerDashboard = () => {
-//   const [projects, setProjects] = useState([
-//     {
-//       id: 1,
-//       title: "E-commerce Platform",
-//       description: "Building a comprehensive online shopping solution",
-//       startDate: "2024-01-15",
-//       endDate: "2024-06-30",
-//       status: "active",
-//       tasks: [
-//         { 
-//           id: 1, 
-//           title: "Frontend Development", 
-//           assignedTo: "John Doe", 
-//           status: "in-progress", 
-//           priority: "high" 
-//         },
-//         { 
-//           id: 2, 
-//           title: "Payment Integration", 
-//           assignedTo: "Jane Smith", 
-//           status: "to-do", 
-//           priority: "medium" 
-//         }
-//       ]
-//     },
-//     {
-//       id: 2,
-//       title: "Internal HR System",
-//       description: "Developing a comprehensive HR management platform",
-//       startDate: "2024-02-01",
-//       endDate: "2024-07-15",
-//       status: "planned",
-//       tasks: []
-//     }
-//   ]);
+
 
 const [projects, setProjects] = useState([]);
 const [users, setUsers] = useState([]);
@@ -70,14 +36,8 @@ const [openProjectModal, setOpenProjectModal] = useState(false);
 const [openTaskModal, setOpenTaskModal] = useState(false);
 const [selectedProject, setSelectedProject] = useState(null);
 const navigate=useNavigate();
-// const axiosInstance = axios.create({
-//     baseURL: 'http://localhost:8000/',
-//     withCredentials: true,
-//     headers: {
-//       'Content-Type': 'application/json',
-//       'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-//     }
-//   });
+const { userprojects, loading, error } = useSelector((state) => state.project);
+
 // Project Form State
 const [projectForm, setProjectForm] = useState({
     title: '',
@@ -162,6 +122,65 @@ const [projectForm, setProjectForm] = useState({
      
     }
   };
+
+
+// Calculate project statistics
+const calculateProjectStats = () => {
+  return {
+    totalProjects:  userprojects.length,
+    activeProjects:  userprojects.filter(p => p.status === 'active').length,
+    plannedProjects:  userprojects.filter(p => p.status === 'planned').length,
+    completedProjects:  userprojects.filter(p => p.status === 'completed').length
+  };
+};
+
+// Calculate task statistics
+const calculateTaskStats = () => {
+  const allTasks =  userprojects.flatMap(project => project.tasks || []);
+  return {
+    totalTasks: allTasks.length,
+    todoTasks: allTasks.filter(t => t.status === 'todo').length,
+    inProgressTasks: allTasks.filter(t => t.status === 'in-progress').length,
+    doneTasks: allTasks.filter(t => t.status === 'done').length
+  };
+};
+
+// Get two most recent projects
+const getRecentProjects = () => {
+  return  userprojects
+  //   .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .slice(0, 2);
+};
+// Render statistics card
+const StatCard = ({ icon, title, value, color }) => (
+  <Card className={`p-4 bg-${color}-50 flex flex-row items-center space-x-4`}>
+    <div className={`p-3 rounded-full bg-${color}-100`}>
+      {icon}
+    </div>
+    <div>
+      <Typography variant="h6" color="blue-gray">{title}</Typography>
+      <Typography variant="h4" color="blue-gray">{value}</Typography>
+    </div>
+  </Card>
+);
+
+// Render recent project card
+const RecentProjectCard = ({ project }) => (
+  <Card className="p-4 mb-2">
+    <div className="flex justify-between items-center">
+      <Typography variant="h6" color="blue-gray">
+        {project.title}
+      </Typography>
+      <Typography variant="small" color="gray">
+        {new Date(project.created_at).toLocaleDateString()}
+      </Typography>
+    </div>
+    <Typography variant="small" className="mt-2 text-gray-600">
+      {project.description}
+    </Typography>
+  </Card>
+);
+
 
   // Task Creation Handler
   const handleTaskCreate = async () => {
@@ -281,27 +300,27 @@ const [projectForm, setProjectForm] = useState({
           Manager Dashboard
         </Typography>
 
-        {/* Stats Cards */}
+        {/* Staqts Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           {[
             { 
               icon: FolderIcon, 
               title: "Total Projects", 
-              value: projects.length, 
+              value:userprojects.length, 
               color: "text-ocean_green-50",
               bgColor: "bg-ocean_green-50/20"
             },
             { 
               icon: ClipboardListIcon, 
               title: "Active Projects", 
-              value: projects?.filter(p => p.status === 'active').length, 
+              value:userprojects?.filter(p => p.status === 'active').length, 
               color: "text-green-500",
               bgColor: "bg-green-500/20"
             },
             { 
               icon: UsersIcon, 
               title: "Tasks Pending", 
-              value: projects?.reduce((acc, proj) => acc + proj.tasks.filter(t => t.status !== 'done').length, 0), 
+              value:userprojects?.reduce((acc, proj) => acc + proj.tasks.filter(t => t.status !== 'done').length, 0), 
               color: "text-deep_orange-400",
               bgColor: "bg-deep_orange-400/20"
             }

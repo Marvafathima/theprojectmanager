@@ -40,7 +40,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         status = self.request.query_params.get('status')
         if status:
             queryset = queryset.filter(status=status)
-        
+       
         return queryset
 
     def list(self, request):
@@ -48,10 +48,42 @@ class ProjectViewSet(viewsets.ModelViewSet):
         
         # Pagination is now handled by the pagination_class
         page = self.paginate_queryset(queryset)
+        
         if page is not None:
             serializer = self.get_serializer(page, many=True)
+            
             return self.get_paginated_response(serializer.data)
         
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    
+
+    @action(detail=False, methods=['GET'], url_path='user-projects')
+    def user_projects(self, request):
+        """
+        Fetch projects related to the current user based on their role.
+        
+        - For superadmins: All projects
+        - For managers: Projects they've created
+        - For employees: Projects they are members of
+        """
+        user = request.user
+
+        if user.is_staff and user.is_superuser:
+            # Superadmin sees all projects
+            queryset = Project.objects.all()
+        elif user.is_staff:
+            # Managers see projects they've created
+            queryset = Project.objects.filter(created_by=user)
+        else:
+            # Regular employees see projects they are members of
+            queryset = Project.objects.filter(
+                Q(members__user=user) |
+                Q(tasks__assigned_to=user)
+            ).distinct()
+        status = request.query_params.get('status')
+        if status:
+            queryset = queryset.filter(status=status)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
     @action(detail=True, methods=['GET'])

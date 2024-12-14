@@ -18,6 +18,7 @@ import EmployeeProjectDetail from './components/employee/EmployeeProjectDetail'
 import EmployeeProjects from './components/employee/EmployeeProjects'
 import TaskDetailComponent from './components/employee/TaskDetailComponent'
 import TaskListComponent from './components/employee/TaskListComponent'
+import AdminDashboard from './components/manager/AdminDashboard'
 function App() {
 
 
@@ -31,9 +32,8 @@ function App() {
        {/* <Route path="/login" element={<ProtectedRoute><Login/></ProtectedRoute>}></Route> */}
       <Route path="/dashboard" element={<Dashboard/>}></Route>
      
-      {/* <Route path="/hrdashboard" element={ <ManagerDashboard/>}></Route> */}
-     
-      <Route path="/hrdashboard" element={<RoleProtectedRoute allowedRoles={['manager','admin']} > <ManagerDashboard/></RoleProtectedRoute>}></Route>
+      <Route path="/hrdashboard" element={<RoleProtectedRoute allowedRoles={['manager','admin']} > <AdminDashboard/></RoleProtectedRoute>}></Route>
+      {/* <Route path="/hrdashboard" element={<RoleProtectedRoute allowedRoles={['manager','admin']} > <ManagerDashboard/></RoleProtectedRoute>}></Route> */}
       <Route path="/projects" element={<RoleProtectedRoute allowedRoles={['manager','admin']} >
          <UserProjects/></RoleProtectedRoute>}></Route>
          <Route path="/myprojects" element={<RoleProtectedRoute allowedRoles={['employee']} >

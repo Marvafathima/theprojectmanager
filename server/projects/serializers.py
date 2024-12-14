@@ -8,19 +8,28 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email' , 'profile_pic']
+class GetTaskSerializer(serializers.ModelSerializer):
+    
 
+    class Meta:
+        model = Task
+        fields =["status"]
+
+    
 class ProjectSerializer(serializers.ModelSerializer):
     created_by = UserSerializer(read_only=True)
     members = serializers.SerializerMethodField()
-
+    tasks=GetTaskSerializer(many=True, read_only=True) 
     class Meta:
         model = Project
         fields = [
             'id', 'title', 'description', 'start_date', 'end_date', 
-            'status', 'created_by', 'created_at', 'updated_at', 'members'
+            'status', 'created_by', 'created_at', 'updated_at', 'members','tasks'
         ]
-        read_only_fields = ['created_at', 'updated_at']
+        # read_only_fields = ['created_at', 'updated_at']
 
+    
+    
     def get_members(self, obj):
         members = ProjectMember.objects.filter(project=obj)
         return [

@@ -11,10 +11,11 @@ import authReducer from './authSlice';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
 import { combineReducers } from 'redux';
-
+import projectReducer from './projectSlice'
 // Combine reducers if you have more than one
 const rootReducer = combineReducers({
   auth: authReducer,
+  project:projectReducer
 });
 
 // Persist configuration

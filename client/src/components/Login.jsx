@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { signup,login,logout } from '../slice/authSlice';
+import { fetchUserProjects } from '../slice/projectSlice';
 export function Login() {
   const [formData, setFormData] = useState({
     email: '',
@@ -51,11 +52,15 @@ const handleSubmit = async () => {
         const resultAction = await dispatch(login(formData)).unwrap();
         console.log(resultAction)
         if (resultAction.user && resultAction.user.role=="employee" ){
+          dispatch(fetchUserProjects())
           navigate('/dashboard')
+          
           toast.success("login successfull.")
         }
         else{
+          dispatch(fetchUserProjects())
           navigate('/hrdashboard');
+         
           toast.success("login successfull.")
         }
         
