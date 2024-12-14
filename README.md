@@ -17,8 +17,8 @@ A full-stack project management application built with:
 
 ### 1. Clone the Repository
 
-git clone https://github.com/yourusername/project-management-app.git
-cd project-management-app
+git clone https://github.com/Marvafathima/theprojectmanager.git
+cd server
 
 
 ### 2. Backend Environment Setup

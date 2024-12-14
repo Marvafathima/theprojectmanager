@@ -10,7 +10,7 @@ from .models import Project, Task, ProjectMember
 from .serializers import ProjectSerializer, TaskSerializer
 from .permissions import IsProjectMemberOrAdmin, IsTaskOwnerOrProjectMember
 from .Pagination import StandardResultsSetPagination
-
+import json
 
 # ViewSet for Project Management
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -47,6 +47,45 @@ class ProjectViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(status=status)
         
         return queryset
+    @action(detail=False, methods=['POST'], url_path='bulk-delete')
+    def bulk_delete(self, request):
+        """
+        Bulk delete projects for the authenticated user.
+        
+        Expected payload: 
+        {
+            "project_ids": [1, 2, 3]
+        }
+        """
+        # project_ids = request.data.get('project_ids', [])
+        project_ids = request.data.get('data', {}).get('project_ids', [])
+        print("\n\n\n\n\n\n\n\n",request.data)
+        
+        if not project_ids:
+            return Response({
+                'detail': 'No project IDs provided for deletion'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        projects_to_delete = self.get_queryset().filter(id__in=project_ids)
+
+        # Track the projects that the user can actually delete
+        deletable_projects = []
+        for project in projects_to_delete:
+            # Check permissions: is the user an admin or the creator of the project?
+            if request.user.is_superuser or project.created_by == request.user:
+                deletable_projects.append(project)
+        
+        if len(deletable_projects) != len(project_ids):
+            return Response({
+                'detail': 'You do not have permission to delete one or more selected projects'
+            }, status=status.HTTP_403_FORBIDDEN)
+        
+        deleted_count, _ = Project.objects.filter(id__in=[proj.id for proj in deletable_projects]).delete()
+        
+        return Response({
+            'detail': f'{deleted_count} projects deleted successfully'
+        }, status=status.HTTP_200_OK)
+    
 
     def list(self, request):
         """
@@ -231,7 +270,7 @@ class TaskViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         
         return Response({'error': 'Validation failed', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
+    
     def destroy(self, request, *args, **kwargs):
         """
         Handles task deletion and removes users from projects if no tasks remain.

@@ -6,7 +6,8 @@ import {
   Typography, 
   Button, 
   Select, 
-  Option ,Spinner
+  Option ,Spinner,
+  Checkbox
 } from "@material-tailwind/react";
 import axios from 'axios';
 import { Layout } from '../Layout'; 
@@ -14,6 +15,7 @@ import { BASE_URL } from '../../config';
 import { useSelector } from 'react-redux';
 import axiosInstance from '../../utils/axiosInstance';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 const UserProjects = () => {
   // State management
   const [projects, setProjects] = useState([]);
@@ -24,15 +26,10 @@ const UserProjects = () => {
   const [error, setError] = useState(null);
   const user=useSelector(state=>state.auth)
   const navigate=useNavigate();
-//   const axiosInstance = axios.create({
-//     baseURL: 'http://localhost:8000/',
-//     withCredentials: true,
-//     headers: {
-//       'Content-Type': 'application/json',
-//       'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-//     }
-//   });
-  // Fetch projects
+  // New state for bulk selection
+  const [selectedProjects, setSelectedProjects] = useState([]);
+  const [isSelectMode, setIsSelectMode] = useState(false);
+  
   const fetchProjects = async () => {
     setIsLoading(true);
     try {
@@ -40,12 +37,12 @@ const UserProjects = () => {
         params: {
           page: currentPage,
           status: projectStatus,
-          user_id: user.id // Backend should handle this filtering
+          user_id: user.id 
         }
       });
 
       setProjects(response.data.results);
-      setTotalPages(Math.ceil(response.data.count / 10)); // Assuming 10 items per page
+      setTotalPages(Math.ceil(response.data.count / 10)); 
       setError(null);
     } catch (err) {
       setError('Failed to fetch projects');
@@ -59,6 +56,49 @@ const UserProjects = () => {
   useEffect(() => {
     fetchProjects();
   }, [currentPage, projectStatus, user.id]);
+
+// Bulk delete handler
+const handleBulkDelete = async () => {
+  if (selectedProjects.length === 0) return;
+
+  try {
+    setIsLoading(true);
+    console.log("project id to be deleted",selectedProjects)
+    await axiosInstance.post('projects/bulk-delete/', {
+      data: { project_ids: selectedProjects }
+    });
+
+    // Refresh projects after deletion
+    await fetchProjects();
+    
+    // Reset selection
+    setSelectedProjects([]);
+    setIsSelectMode(false);
+  } catch (err) {
+    // setError('Failed to delete projects');
+    toast.error("Failed to delete projects")
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+// Toggle project selection
+const toggleProjectSelection = (projectId) => {
+  setSelectedProjects(prev => 
+    prev.includes(projectId)
+      ? prev.filter(id => id !== projectId)
+      : [...prev, projectId]
+  );
+};
+
+// Select all projects
+const toggleSelectAll = () => {
+  if (selectedProjects.length === projects.length) {
+    setSelectedProjects([]);
+  } else {
+    setSelectedProjects(projects.map(project => project.id));
+  }
+};
 
   // Pagination handlers
   const handleNextPage = () => {
@@ -86,25 +126,31 @@ const UserProjects = () => {
     navigate(`/projects/${projectId}`); // Navigate to the project detail page
   };
   // Render project card
+  // const renderProjectCard = (project) => (
+  //   <Card key={project.id} className="mb-4">
+      
+
+  //     <CardBody>
+  //     <Typography variant="h5" color="blue-gray" className="mb-2">
+  //         {project.title}
+  //       </Typography>
   const renderProjectCard = (project) => (
-    <Card key={project.id} className="mb-4">
-      {/* <CardHeader 
-        color="blue-gray" 
-        className="relative h-56" */}
-        {/* // Optionally add project image
-      > */}
-        {/* <img 
-          src={project.image_url || '/default-project-image.png'} 
-          alt={project.title} 
-          className="h-full w-full object-cover"
-        /> */}
-      {/* <Typography variant="h5" color="bule-gray" className="mb-2">
-          {project.title}
-        </Typography>  
-      </CardHeader> */}
+    <Card 
+      key={project.id} 
+      className={`mb-4 ${selectedProjects.includes(project.id) ? 'bg-blue-50' : ''}`}
+    >
+      {isSelectMode && (
+        <Checkbox
+          checked={selectedProjects.includes(project.id)}
+          onChange={() => toggleProjectSelection(project.id)}
+          containerProps={{
+            className: 'absolute top-2 right-2 z-10'
+          }}
+        />
+      )}
 
       <CardBody>
-      <Typography variant="h5" color="blue-gray" className="mb-2">
+        <Typography variant="h5" color="blue-gray" className="mb-2">
           {project.title}
         </Typography>
         <Typography variant="h5" color="blue-gray" className="mb-2">
@@ -137,9 +183,8 @@ const UserProjects = () => {
         <Typography variant="h3" className="mb-6">
           User Projects
         </Typography>
-
-        {/* Status Filter */}
-        <div className="mb-4">
+{/* Bulk Actions */}
+<div className="flex justify-between items-center mb-4">
           <Select 
             label="Filter by Status"
             value={projectStatus}
@@ -150,7 +195,47 @@ const UserProjects = () => {
             <Option value="active">Active</Option>
             <Option value="completed">Completed</Option>
           </Select>
+
+          <div className="flex items-center space-x-2">
+            <Button 
+              variant="outlined" 
+              color={isSelectMode ? 'red' : 'blue-gray'}
+              onClick={() => setIsSelectMode(!isSelectMode)}
+            >
+              {isSelectMode ? 'Cancel' : 'Select Projects'}
+            </Button>
+            {isSelectMode && (
+              <>
+                <Checkbox 
+                  label="Select All"
+                  checked={selectedProjects.length === projects.length}
+                  onChange={toggleSelectAll}
+                />
+                <Button 
+                  variant="filled" 
+                  color="red"
+                  disabled={selectedProjects.length === 0}
+                  onClick={handleBulkDelete}
+                >
+                  Delete Selected ({selectedProjects.length})
+                </Button>
+              </>
+            )}
+          </div>
         </div>
+        {/* Status Filter */}
+        {/* <div className="mb-4">
+          <Select 
+            label="Filter by Status"
+            value={projectStatus}
+            onChange={(val) => setProjectStatus(val)}
+          >
+            <Option value="">All Projects</Option>
+            <Option value="planned">Planned</Option>
+            <Option value="active">Active</Option>
+            <Option value="completed">Completed</Option>
+          </Select>
+        </div> */}
 
         {/* Projects Grid */}
         {isLoading ? (
