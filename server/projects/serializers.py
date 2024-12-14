@@ -56,77 +56,178 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
     
+# class TaskSerializer(serializers.ModelSerializer):
+#     # Define read-only fields for user and project serializers
+#     created_by = UserSerializer(read_only=True)
+#     assigned_to = UserSerializer(read_only=True)
+#     # Write-only field for assigning a user by their ID
+    
+#     assigned_to_id = serializers.PrimaryKeyRelatedField(
+#         source='assigned_to',
+#         queryset=User.objects.all(),
+#         required=False, # Assignment is optional
+#         allow_null=True,# Can be left unassigned
+#         write_only=True  # This field is for input only
+#     )
+
+#     project = ProjectSerializer(read_only=True)
+#     project_id = serializers.PrimaryKeyRelatedField(
+#         source='project',
+#         queryset=Project.objects.all(),
+#         write_only=True  # This field is for input only
+#     )
+#     class Meta:
+#         model = Task
+#         fields = '__all__'
+#         extra_kwargs = {
+#             'completed_at': {'read_only': True}
+#         }
+
+#     def validate(self, data):
+#         # Current date
+#         today = timezone.now().date()
+
+#         # Check start date is not in the past
+#         start_date = data.get('start_date', None)
+#         if start_date and start_date < today:
+#             raise serializers.ValidationError({
+#                 'start_date': 'Start date cannot be in the past.'
+#             })
+
+#         # Check due date is after start date
+#         due_date = data.get('due_date', None)
+#         if start_date and due_date and due_date <= start_date:
+#             raise serializers.ValidationError({
+#                 'due_date': 'Due date must be after start date.'
+#             })
+
+#         # Check project date constraints
+#         project = data.get('project', None)
+#         if project:
+#             # Ensure task dates are within project dates
+#             if start_date and (start_date < project.start_date or start_date > project.end_date):
+#                 raise serializers.ValidationError({
+#                     'start_date': f'Start date must be between {project.start_date} and {project.end_date}'
+#                 })
+            
+#             if due_date and (due_date < project.start_date or due_date > project.end_date):
+#                 raise serializers.ValidationError({
+#                     'due_date': f'Due date must be between {project.start_date} and {project.end_date}'
+#                 })
+#         task_id = self.instance.id if self.instance else None  # Get the ID of the task being updated
+
+#         # Check assigned user constraints
+#         assigned_to = data.get('assigned_to', None)
+#         if assigned_to:
+#             # Check if user already has a task in this project
+#             existing_project_tasks = Task.objects.filter(
+#                 project=project, 
+#                 assigned_to=assigned_to
+
+#             ).exclude(id=task_id)
+#             if existing_project_tasks.exists():
+#                 raise serializers.ValidationError({
+#                     'assigned_to': 'User is already assigned to a task in this project.'
+#                 })
+
+#             # Check high priority task constraints
+#             high_priority_tasks = Task.objects.filter(
+#                 assigned_to=assigned_to,
+#                 priority='high',
+#                 due_date=due_date
+#             )
+#             if high_priority_tasks.exists():
+#                 raise serializers.ValidationError({
+#                     'assigned_to': 'User cannot be assigned another high priority task with the same deadline.'
+#                 })
+        
+#         return data
 class TaskSerializer(serializers.ModelSerializer):
+    # Define read-only fields for user and project serializers
     created_by = UserSerializer(read_only=True)
     assigned_to = UserSerializer(read_only=True)
+
+    # Write-only field for assigning a user by their ID
     assigned_to_id = serializers.PrimaryKeyRelatedField(
         source='assigned_to',
         queryset=User.objects.all(),
-        required=False,
-        allow_null=True,
+        required=False,  # Assignment is optional
+        allow_null=True,  # Can be left unassigned
         write_only=True  # This field is for input only
     )
+
+    # Write-only field for assigning a project by its ID
     project = ProjectSerializer(read_only=True)
     project_id = serializers.PrimaryKeyRelatedField(
         source='project',
         queryset=Project.objects.all(),
         write_only=True  # This field is for input only
     )
+
     class Meta:
         model = Task
         fields = '__all__'
         extra_kwargs = {
-            'completed_at': {'read_only': True}
+            'completed_at': {'read_only': True}  # The completion date cannot be modified manually
         }
 
     def validate(self, data):
-        # Current date
-        today = timezone.now().date()
+        """
+        Perform custom validation for the Task model. This includes checks for:
+        - Start date constraints
+        - Due date constraints
+        - Task assignment within project date limits
+        - Unique constraints on assigned tasks per user
+        """
+        today = timezone.now().date()  # Get the current date
 
-        # Check start date is not in the past
+        # Ensure the start date is not in the past
         start_date = data.get('start_date', None)
         if start_date and start_date < today:
             raise serializers.ValidationError({
                 'start_date': 'Start date cannot be in the past.'
             })
 
-        # Check due date is after start date
+        # Ensure the due date is after the start date
         due_date = data.get('due_date', None)
         if start_date and due_date and due_date <= start_date:
             raise serializers.ValidationError({
-                'due_date': 'Due date must be after start date.'
+                'due_date': 'Due date must be after the start date.'
             })
 
-        # Check project date constraints
+        # Check if the task dates fall within the project's start and end dates
         project = data.get('project', None)
         if project:
-            # Ensure task dates are within project dates
+            # Validate the start date against the project's timeline
             if start_date and (start_date < project.start_date or start_date > project.end_date):
                 raise serializers.ValidationError({
-                    'start_date': f'Start date must be between {project.start_date} and {project.end_date}'
+                    'start_date': f'Start date must be between {project.start_date} and {project.end_date}.'
                 })
-            
+
+            # Validate the due date against the project's timeline
             if due_date and (due_date < project.start_date or due_date > project.end_date):
                 raise serializers.ValidationError({
-                    'due_date': f'Due date must be between {project.start_date} and {project.end_date}'
+                    'due_date': f'Due date must be between {project.start_date} and {project.end_date}.'
                 })
-        task_id = self.instance.id if self.instance else None  # Get the ID of the task being updated
 
-        # Check assigned user constraints
+        # Determine the ID of the current task being updated (if applicable)
+        task_id = self.instance.id if self.instance else None
+
+        # Validate assignment constraints for the assigned user
         assigned_to = data.get('assigned_to', None)
         if assigned_to:
-            # Check if user already has a task in this project
+            # Ensure the user is not already assigned to another task in the same project
             existing_project_tasks = Task.objects.filter(
-                project=project, 
+                project=project,
                 assigned_to=assigned_to
+            ).exclude(id=task_id)  # Exclude the current task being updated
 
-            ).exclude(id=task_id)
             if existing_project_tasks.exists():
                 raise serializers.ValidationError({
                     'assigned_to': 'User is already assigned to a task in this project.'
                 })
 
-            # Check high priority task constraints
+            # Prevent assigning the user another high-priority task with the same due date
             high_priority_tasks = Task.objects.filter(
                 assigned_to=assigned_to,
                 priority='high',
@@ -134,7 +235,8 @@ class TaskSerializer(serializers.ModelSerializer):
             )
             if high_priority_tasks.exists():
                 raise serializers.ValidationError({
-                    'assigned_to': 'User cannot be assigned another high priority task with the same deadline.'
+                    'assigned_to': 'User cannot be assigned another high-priority task with the same deadline.'
                 })
-        
+
+        # Return the validated data
         return data
