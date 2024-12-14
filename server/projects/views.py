@@ -80,13 +80,36 @@ class ProjectViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+
+class MyTasksViewSet(viewsets.ModelViewSet):
+    serializer_class = TaskSerializer
+    permission_classes = [IsAuthenticated, IsTaskOwnerOrProjectMember]
+
+    def get_queryset(self):
+        user = self.request.user
+
+        # Admin sees all tasks
+        if user.is_staff and user.is_superuser:
+            return Task.objects.all()
+        
+        # Managers see all tasks they've created
+        if user.is_staff:
+            return Task.objects.filter(created_by=user)
+        
+        # Regular employees see tasks directly assigned to them 
+        # or tasks from projects where they are members
+        return Task.objects.filter(
+            Q(assigned_to=user) 
+            # | 
+            # Q(project__members__user=user)
+        ).distinct()
 class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated, IsTaskOwnerOrProjectMember]
 
     def get_queryset(self):
         # Admins see all tasks
-        if self.request.user.is_staff or self.request.user.is_superuser:
+        if self.request.user.is_staff and self.request.user.is_superuser:
             return Task.objects.all()
         
         # Regular users see tasks they created, assigned to, or in projects they're members of

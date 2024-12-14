@@ -36,7 +36,7 @@ const [isModalOpen, setIsModalOpen] = useState(false);
   // Fetch tasks
   const fetchTasks = async () => {
     try {
-      const response = await axiosInstance.get('tasks/');
+      const response = await axiosInstance.get('mytasks/');
       setTasks(response.data);
       setFilteredTasks(response.data);
       setTotalPages(Math.ceil(response.data.length / 10)); // 10 items per page

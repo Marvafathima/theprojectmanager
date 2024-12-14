@@ -105,6 +105,8 @@ class IsTaskOwnerOrProjectMember(permissions.BasePermission):
 
         # Allow viewing tasks to project members
         if view.action == 'retrieve' or view.action == 'list':
+            if request.user.is_staff and request.user.is_superuser:
+                return True
             return ProjectMember.objects.filter(project=obj.project, user=request.user).exists()
         
         return False
