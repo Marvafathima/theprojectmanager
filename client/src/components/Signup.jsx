@@ -84,8 +84,17 @@ const handleSubmit = async (e) => {
     try {
         console.log("Form data to be sent:", Object.fromEntries(formDataToSend)); // Convert to object for easier logging
         const resultAction = await dispatch(signup(formDataToSend)).unwrap();
-        toast.success("User Created successfully")
-        navigate('/dashboard');
+        
+        console.log("resultaction",resultAction)
+        if (resultAction.user && resultAction.user.role=="employee" ){
+          navigate('/dashboard')
+          toast.success("signup successfull.")
+        }
+        else if(resultAction.user.role=="admin" || resultAction.user.role=="manager"){
+          navigate('/hrdashboard');
+          toast.success("signup successfull.")
+        }
+        
     } catch (err) {
      
         console.error('Signup failed:', err);

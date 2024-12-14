@@ -120,7 +120,7 @@ const handleUpdateTask = async () => {
         description: taskToUpdate.description,
         status: taskToUpdate.status,
         priority: taskToUpdate.priority,
-        project: projectId,
+        project_id: projectId,
         assigned_to_id: taskToUpdate.assigned_to ? taskToUpdate.assigned_to.id : null,
         start_date: taskToUpdate.start_date,
         due_date: taskToUpdate.due_date
@@ -242,7 +242,7 @@ const openTaskUpdateModal = (task) => {
     try {
       const taskPayload = {
         ...newTask,
-        project: projectId,
+        project_id: projectId,
         // Ensure only ID is sent for related fields
         assigned_to_id: newTask.assigned_to ? newTask.assigned_to.id : null
       };
@@ -254,6 +254,7 @@ const openTaskUpdateModal = (task) => {
       
       // Close modal and reset form
       setIsTaskModalOpen(false);
+      toast.success("Task created successfully")
       setNewTask({
         title: '',
         description: '',

@@ -58,7 +58,12 @@ class TaskSerializer(serializers.ModelSerializer):
         allow_null=True,
         write_only=True  # This field is for input only
     )
-   
+    project = ProjectSerializer(read_only=True)
+    project_id = serializers.PrimaryKeyRelatedField(
+        source='project',
+        queryset=Project.objects.all(),
+        write_only=True  # This field is for input only
+    )
     class Meta:
         model = Task
         fields = '__all__'

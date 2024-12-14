@@ -30,14 +30,17 @@ function App() {
        {/* <Route path="/signup" element={<ProtectedRoute><Signup/></ProtectedRoute>}></Route> */}
        {/* <Route path="/login" element={<ProtectedRoute><Login/></ProtectedRoute>}></Route> */}
       <Route path="/dashboard" element={<Dashboard/>}></Route>
+     
+      {/* <Route path="/hrdashboard" element={ <ManagerDashboard/>}></Route> */}
+     
       <Route path="/hrdashboard" element={<RoleProtectedRoute allowedRoles={['manager','admin']} > <ManagerDashboard/></RoleProtectedRoute>}></Route>
       <Route path="/projects" element={<RoleProtectedRoute allowedRoles={['manager','admin']} >
          <UserProjects/></RoleProtectedRoute>}></Route>
          <Route path="/myprojects" element={<RoleProtectedRoute allowedRoles={['employee']} >
          <EmployeeProjects/></RoleProtectedRoute>}></Route>
          <Route path="/myprojects/:projectId" element={<RoleProtectedRoute allowedRoles={['employee']} ><EmployeeProjectDetail projectId={useParams().projectId} /></RoleProtectedRoute>} />
-      <Route path="/tasklist" element={<RoleProtectedRoute allowedRoles={['employee']} ><TaskListComponent/></RoleProtectedRoute>} />
-      <Route path="/task/:taskId" element={<RoleProtectedRoute allowedRoles={['employee']} ><TaskDetailComponent projectId={useParams().taskId} /></RoleProtectedRoute>} />
+      <Route path="/tasklist" element={<RoleProtectedRoute allowedRoles={['employee','manager','admin']} ><TaskListComponent/></RoleProtectedRoute>} />
+      <Route path="/task/:taskId" element={<RoleProtectedRoute allowedRoles={['employee','manager','admin']} ><TaskDetailComponent projectId={useParams().taskId} /></RoleProtectedRoute>} />
       
       <Route path="/projects/:projectId" element={<RoleProtectedRoute allowedRoles={['manager','admin']} ><ProjectDetail projectId={useParams().projectId} /></RoleProtectedRoute>} />
        

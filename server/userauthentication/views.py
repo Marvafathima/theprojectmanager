@@ -8,6 +8,8 @@ from .serializers import UserSignupSerializer, CustomTokenObtainPairSerializer
 from .models import CustomUser
 from .serializers import CustomUserSerializer
 from rest_framework import viewsets
+from rest_framework_simplejwt.tokens import RefreshToken
+
 class SignupView(APIView):
     permission_classes = [AllowAny]
     
@@ -15,9 +17,16 @@ class SignupView(APIView):
         serializer = UserSignupSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
+            refresh = RefreshToken.for_user(user)
+            tokens = {
+                "refresh": str(refresh),
+                "access": str(refresh.access_token)
+            }
             return Response({
                 "message": "User created successfully",
-                "user": UserSignupSerializer(user).data
+                "user": UserSignupSerializer(user).data,
+                "tokens": tokens
+                
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

@@ -18,6 +18,10 @@ export const signup = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${BASE_URL}api/signup/`, userData);
+      console.log("signupresponse",response.data)
+      localStorage.setItem('accessToken', response.data.tokens.access);
+      localStorage.setItem('refreshToken', response.data.tokens.refresh);
+
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Signup failed');
@@ -46,7 +50,7 @@ export const logout = createAsyncThunk(
   'auth/logout',
   async (_, { rejectWithValue }) => {
     try {
-       
+      
       const refreshToken = localStorage.getItem('refreshToken');
       const accessToken = localStorage.getItem('accessToken');
       console.log("refreshtoken",refreshToken)
@@ -99,6 +103,9 @@ const authSlice = createSlice({
     builder.addCase(signup.fulfilled, (state, action) => {
       state.loading = false;
       state.user = action.payload.user;
+      state.accessToken = action.payload.tokens.access;
+      state.refreshToken = action.payload.tokens.refresh;
+      state.isAuthenticated = true;
     });
     builder.addCase(signup.rejected, (state, action) => {
       state.loading = false;
