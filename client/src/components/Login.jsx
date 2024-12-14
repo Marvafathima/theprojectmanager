@@ -57,6 +57,11 @@ const handleSubmit = async () => {
           
           toast.success("login successfull.")
         }
+        else if(resultAction.user.role=="admin"){
+          dispatch(logout())
+          navigate('/adminlogin')
+          toast.error("Login through Admin Login")
+        }
         else{
           dispatch(fetchUserProjects())
           navigate('/hrdashboard');
