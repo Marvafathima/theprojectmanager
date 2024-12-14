@@ -6,7 +6,7 @@ export const fetchUserProjects = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get('projects/user-projects');
-      console.log("response dataours",response.data)
+     
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch projects');
@@ -40,7 +40,7 @@ const projectSlice = createSlice({
       })
       .addCase(fetchUserProjects.fulfilled, (state, action) => {
         state.loading = 'succeeded';
-        console.log("printing the payload",action.payload)
+       
         state.userprojects = action.payload;
         state.error = null;
       })

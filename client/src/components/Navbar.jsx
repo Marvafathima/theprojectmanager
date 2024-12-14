@@ -71,7 +71,7 @@ export function NavbarWithSearch() {
     const handleLogout = () => {
       dispatch(logout());
       toast.success("logged out successfully")
-      navigate('/login');
+      navigate('/');
   };
 
 
@@ -413,7 +413,7 @@ export function NavbarWithSearch() {
    >
      Signup
    </Button></a> 
-   <a href="/login">
+   <a href="/">
 <Button 
   variant="fullfilled" 
   size="md" 
@@ -505,7 +505,7 @@ export function NavbarWithSearch() {
 >
  Signup
 </Button>
-<a href="/login">
+<a href="/">
  <Button 
   variant="fullfilled" 
   size="sm" 

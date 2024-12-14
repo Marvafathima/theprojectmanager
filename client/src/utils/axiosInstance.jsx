@@ -40,7 +40,7 @@ axiosInstance.interceptors.response.use(
                 const dispatch = useDispatch(); // Initialize dispatch
                 dispatch(logout());
                 const navigate=useNavigate()
-                navigate("/login")
+                navigate("/")
                 return Promise.reject(error);
             }
 
@@ -66,7 +66,7 @@ axiosInstance.interceptors.response.use(
                 const dispatch = useDispatch(); // Initialize dispatch
                 dispatch(logout());
                 const navigate=useNavigate()
-                navigate("/login")
+                navigate("/")
                 return Promise.reject(err);
             }
         }

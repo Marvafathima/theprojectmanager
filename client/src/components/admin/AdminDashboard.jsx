@@ -60,7 +60,6 @@ const [projectForm, setProjectForm] = useState({
   const handleProjectCreate = async () => {
     // Validate project form
     const { title, description, start_date, end_date, status } = projectForm;
-    console.log("this is projectform",projectForm)
     // Validate required fields
     if (!title || !start_date || !end_date) {
       toast.error('Please fill in all required fields');
@@ -79,7 +78,6 @@ const [projectForm, setProjectForm] = useState({
     }
 
     try {
-        console.log("this is projectform",projectForm)
       const response = await axiosInstance.post(`projects/`, projectForm, {
         headers: { 
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,

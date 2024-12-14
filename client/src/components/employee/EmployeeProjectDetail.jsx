@@ -71,7 +71,6 @@ const EmployeeProjectDetail = () => {
       // Fetch project tasks
       const tasksResponse = await axiosInstance.get(`projects/${projectId}/tasks/`);
       setTasks(tasksResponse.data);
-      console.log("task data fetvched",tasksResponse.data)
       // Fetch users for assignment
       const usersResponse = await axiosInstance.get('api/user/users/');
       setUsers(usersResponse.data);

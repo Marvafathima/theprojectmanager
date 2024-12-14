@@ -242,7 +242,7 @@ const handleSubmit = async (e) => {
           <Typography variant="small" className="mt-6 flex justify-center">
             Already have an account?{" "}
             <Link 
-              to="/login" 
+              to="/" 
               className="ml-1 font-bold text-ocean_green-100"
             >
               Log In

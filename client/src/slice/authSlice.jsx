@@ -20,7 +20,7 @@ export const signup = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${BASE_URL}api/signup/`, userData);
-      console.log("signupresponse",response.data)
+    
       localStorage.setItem('accessToken', response.data.tokens.access);
       localStorage.setItem('refreshToken', response.data.tokens.refresh);
 
@@ -41,7 +41,7 @@ export const login = createAsyncThunk(
       localStorage.setItem('accessToken', response.data.access);
       localStorage.setItem('refreshToken', response.data.refresh);
       
-      console.log("response data",response.data)
+     
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Login failed');
@@ -56,7 +56,7 @@ export const logout = createAsyncThunk(
       
       const refreshToken = localStorage.getItem('refreshToken');
       const accessToken = localStorage.getItem('accessToken');
-      console.log("refreshtoken",refreshToken)
+    
       // Call logout endpoint
       await axiosInstance.post(`api/logout/`, { refresh_token: refreshToken },
       {

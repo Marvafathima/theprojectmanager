@@ -63,7 +63,7 @@ const handleBulkDelete = async () => {
 
   try {
     setIsLoading(true);
-    console.log("project id to be deleted",selectedProjects)
+   
     await axiosInstance.post('projects/bulk-delete/', {
       data: { project_ids: selectedProjects }
     });
@@ -122,7 +122,7 @@ const toggleSelectAll = () => {
   };
 
   const handleViewDetails = (projectId) => {
-    console.log("projectid:",projectId)
+  
     navigate(`/projects/${projectId}`); // Navigate to the project detail page
   };
 

@@ -17,6 +17,7 @@ import TaskDetailComponent from './components/employee/TaskDetailComponent'
 import TaskListComponent from './components/employee/TaskListComponent'
 import AdminLogin from './components/admin/AdminLogin';
 import AdminDashboard from './components/admin/AdminDashboard';
+import Unauthorized from './components/Unauthorized';
 function App() {
 
 
@@ -25,8 +26,8 @@ function App() {
         <BrowserRouter>
        <Routes>
        <Route path="/signup" element={<Signup/>}></Route>
-       <Route path="/login" element={<Login/>}></Route>
-      
+       <Route path="/" element={<Login/>}></Route>
+       <Route path="/unauthorized" element={<Unauthorized/>}></Route>
       <Route path="/dashboard" element={<RoleProtectedRoute allowedRoles={['employee']}><Dashboard/></RoleProtectedRoute>}></Route>
       <Route path="/adminlogin" element={ <AdminLogin/>}></Route>
       <Route path="/admindashboard" element={<RoleProtectedRoute allowedRoles={['admin']} > <AdminDashboard/></RoleProtectedRoute>}></Route>

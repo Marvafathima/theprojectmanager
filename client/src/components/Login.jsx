@@ -45,7 +45,7 @@ export function Login() {
 
 
 const handleSubmit = async () => {
-   console.log("button clicked")
+   
     try {
       // Using the loginUser thunk from your slice
       if (validateForm()){
