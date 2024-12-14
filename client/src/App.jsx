@@ -32,8 +32,8 @@ function App() {
        {/* <Route path="/login" element={<ProtectedRoute><Login/></ProtectedRoute>}></Route> */}
       <Route path="/dashboard" element={<Dashboard/>}></Route>
      
-      <Route path="/hrdashboard" element={<RoleProtectedRoute allowedRoles={['manager','admin']} > <AdminDashboard/></RoleProtectedRoute>}></Route>
-      {/* <Route path="/hrdashboard" element={<RoleProtectedRoute allowedRoles={['manager','admin']} > <ManagerDashboard/></RoleProtectedRoute>}></Route> */}
+      {/* <Route path="/hrdashboard" element={<RoleProtectedRoute allowedRoles={['manager','admin']} > <AdminDashboard/></RoleProtectedRoute>}></Route> */}
+      <Route path="/hrdashboard" element={<RoleProtectedRoute allowedRoles={['manager','admin']} > <ManagerDashboard/></RoleProtectedRoute>}></Route>
       <Route path="/projects" element={<RoleProtectedRoute allowedRoles={['manager','admin']} >
          <UserProjects/></RoleProtectedRoute>}></Route>
          <Route path="/myprojects" element={<RoleProtectedRoute allowedRoles={['employee']} >
