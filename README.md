@@ -73,6 +73,10 @@ python manage.py createsuperuser
 
 python manage.py runserver
 
+### 8. To run test cases
+
+python manage.py test
+
 
 ## Frontend Setup
 
@@ -91,6 +95,7 @@ npm install
 npm run dev
 
 ### To use the local backend for development, replace the  URL in  client/src/config.jsx with the following:
+
 export const BASE_URL = "http://localhost:8000/";
 
 ## Project Structure-server
