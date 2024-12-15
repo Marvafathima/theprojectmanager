@@ -8,31 +8,30 @@ A full-stack project management application built with:
 - Authentication: JWT (Simple JWT)
 
 ## Prerequisites
-- Python 3.9+
+- Python 3.8.10
+- Django 4.2.16
 - Node.js 16+
 - npm or yarn
 - PostgreSQL
 
-## Backend Setup
 
-### 1. Clone the Repository
+### 1. Backend Environment Setup
 
-git clone https://github.com/Marvafathima/theprojectmanager.git
-cd server
-
-
-### 2. Backend Environment Setup
-
+mkdir projectmanager
 #### Create a Virtual Environment
-
+pip install virtualenv
 # On Windows
-python -m venv venv
+virtualenv venv
 venv\Scripts\activate
 
 # On macOS/Linux
-python3 -m venv venv
+virtualenv venv
 source venv/bin/activate
 
+### 2. Clone the Repository
+
+git clone https://github.com/Marvafathima/theprojectmanager.git
+cd server
 
 #### Install Dependencies
 
@@ -40,6 +39,8 @@ pip install -r requirements.txt
 
 
 ### 3. Environment Configuration
+pip install python-dotenv
+
 Create a `.env` file in the backend root directory with the following variables:
 
 SECRET_KEY=your_django_secret_key
@@ -55,7 +56,7 @@ DB_PASSWORD=your_postgres_password
 # Create PostgreSQL Database
 psql -U postgres
 CREATE DATABASE your_database_name;
-```
+
 
 ### 5. Database Migrations
 
@@ -63,10 +64,10 @@ python manage.py makemigrations
 python manage.py migrate
 
 
-### 6. Create Superuser (Optional)
+### 6. Create Superuser
 
 python manage.py createsuperuser
-```
+
 
 ### 7. Run Backend Server
 
@@ -78,7 +79,7 @@ python manage.py runserver
 ### 1. Navigate to Frontend Directory
 
 cd client
-```
+
 
 ### 2. Install Dependencies
 
@@ -157,12 +158,7 @@ The application uses JWT (JSON Web Token) authentication:
 ## Media Files
 Media uploads are stored in the `server/media/` directory.
 
-## Deployment Considerations
-- Set `DEBUG=False` in production
-- Use environment-specific settings
-- Configure CORS settings
-- Set up proper database credentials
-- Use a production-ready web server (Gunicorn, uWSGI)
+
 
 ## Common Issues
 - Ensure PostgreSQL is running
