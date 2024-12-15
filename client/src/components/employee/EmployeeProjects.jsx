@@ -24,14 +24,7 @@ const EmployeeProjects = () => {
   const [error, setError] = useState(null);
   const user=useSelector(state=>state.auth)
   const navigate=useNavigate();
-//   const axiosInstance = axios.create({
-//     baseURL: 'http://localhost:8000/',
-//     withCredentials: true,
-//     headers: {
-//       'Content-Type': 'application/json',
-//       'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-//     }
-//   });
+
   // Fetch projects
   const fetchProjects = async () => {
     setIsLoading(true);
