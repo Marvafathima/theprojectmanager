@@ -90,8 +90,10 @@ npm install
 
 npm run dev
 
+### To use the local backend for development, replace the  URL in  client/src/config.jsx with the following:
+export const BASE_URL = "http://localhost:8000/";
 
-## Project Structure
+## Project Structure-server
 
 project-management-app/
 │
