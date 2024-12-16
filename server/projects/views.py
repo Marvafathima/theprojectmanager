@@ -54,7 +54,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         
         Expected payload: 
         {
-            "project_ids": [1, 2, 3]
+            "data{project_ids": [1, 2, 3]}
         }
         """
         # project_ids = request.data.get('project_ids', [])

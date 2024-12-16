@@ -162,7 +162,7 @@ class TaskSerializer(serializers.ModelSerializer):
                 assigned_to=assigned_to,
                 priority='high',
                 due_date=due_date
-            )
+            ).exclude(id=task_id)
             if high_priority_tasks.exists():
                 raise serializers.ValidationError({
                     'assigned_to': 'User cannot be assigned another high-priority task with the same deadline.'
