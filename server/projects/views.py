@@ -285,3 +285,21 @@ class TaskViewSet(viewsets.ModelViewSet):
             ProjectMember.objects.filter(project=project, user=assigned_to).delete()
 
         return response
+
+
+from django.http import JsonResponse
+from .tasks import check_and_send_deadline_reminders
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from datetime import timedelta
+from projects.models import Task
+
+@login_required
+def test_deadline_reminders(request):
+    # Manually trigger the reminder check
+    check_and_send_deadline_reminders.delay()
+    return JsonResponse({
+        'status': 'Deadline reminder check initiated'
+    })
+
+
