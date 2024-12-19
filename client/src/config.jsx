@@ -1,1 +1,1 @@
-export const BASE_URL = "https://narrato.fun/";
+export const BASE_URL = "https://api.narrato.fun/";
