@@ -49,6 +49,11 @@ DB_HOST=localhost
 DB_PORT=5432
 DB_USER=your_postgres_username
 DB_PASSWORD=your_postgres_password
+EMAIL_HOST = your_email_host
+EMAIL_HOST_USER =your_host_user 
+EMAIL_HOST_PASSWORD =your_host_password
+EMAIL_USE_TLS =
+EMAIL_PORT =port_number
 
 
 ### 4. Database Setup
@@ -71,7 +76,11 @@ python manage.py createsuperuser
 
 ### 7. Run Backend Server
 
-python manage.py runserver
+python manage.py runserver &
+redis-server &
+celery -A server worker -l info &
+celery -A server beat -l info 
+
 
 ### 8. To run test cases
 
